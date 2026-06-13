@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KemasToko - KEMAS KASIR</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config={darkMode:"class",theme:{extend:{colors:{"secondary-container":"#fc7728","on-surface-variant":"#43474f","on-secondary":"#ffffff","on-surface":"#0b1c30","surface-container-high":"#dce9ff","background":"#f8f9ff","error-container":"#ffdad6","secondary":"#a04100","primary-fixed-dim":"#a7c8ff","on-primary":"#ffffff","secondary-fixed":"#ffdbcb","surface-container-lowest":"#ffffff","outline":"#737780","surface-variant":"#d3e4fe","on-tertiary-fixed":"#00210d","outline-variant":"#c3c6d1","on-tertiary-fixed-variant":"#005228","tertiary-fixed":"#77fca3","on-tertiary-container":"#1db262","on-background":"#0b1c30","on-secondary-fixed":"#341000","on-secondary-container":"#5d2300","tertiary-container":"#003c1c","on-error-container":"#93000a","surface-dim":"#cbdbf5","inverse-primary":"#a7c8ff","surface-container":"#e5eeff","tertiary":"#00240e","tertiary-fixed-dim":"#59df89","primary":"#001e40","inverse-on-surface":"#eaf1ff","error":"#ba1a1a","primary-fixed":"#d5e3ff","surface-tint":"#3a5f94","surface-container-highest":"#d3e4fe","on-secondary-fixed-variant":"#7a3000","surface":"#f8f9ff","secondary-fixed-dim":"#ffb693","surface-container-low":"#eff4ff","surface-bright":"#f8f9ff","on-error":"#ffffff","on-primary-container":"#799dd6","on-primary-fixed":"#001b3c","primary-container":"#003366","on-primary-fixed-variant":"#1f477b"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"xs":"4px","gutter":"16px","lg":"24px","margin-mobile":"16px","xl":"32px","md":"16px","base":"4px","margin-desktop":"64px","sm":"8px"},fontFamily:{"headline-lg-mobile":["Manrope"],"title-md":["Manrope"],"headline-lg":["Manrope"],"display-lg":["Manrope"],"body-lg":["Inter"],"body-sm":["Inter"],"label-md":["JetBrains Mono"]},fontSize:{"headline-lg-mobile":["24px",{"lineHeight":"32px","fontWeight":"600"}],"title-md":["20px",{"lineHeight":"28px","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"40px","fontWeight":"600"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"body-sm":["14px",{"lineHeight":"20px","fontWeight":"400"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"500"}]}}}}
+</script>
+<style>
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transparent;min-height:max(884px,100dvh)}
+.hide-scrollbar::-webkit-scrollbar{display:none}.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+.prod-card{transition:all .15s;border:1px solid #e5eeff}
+.prod-card:active{transform:scale(.93)}
+.cart-badge{position:absolute;top:-4px;right:-4px;background:#ba1a1a;color:white;border-radius:50%;width:18px;height:18px;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700}
+#receipt-modal{display:none;position:fixed;inset:0;z-index:300}
+#receipt-modal.show{display:flex}
+#cart-sheet{display:none;position:fixed;inset:0;z-index:200}
+#cart-sheet.show{display:flex}
+#diskon-sheet{display:none;position:fixed;inset:0;z-index:250}
+#diskon-sheet.show{display:flex}
+#pelanggan-sheet{display:none;position:fixed;inset:0;z-index:250}
+#pelanggan-sheet.show{display:flex}
+.cat-active{background:#001e40;color:white}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.slide-up{animation:slideUp .3s cubic-bezier(.4,0,.2,1)}
+.promo-badge{background:linear-gradient(135deg,#fc7728,#ff9a5c);color:white;font-size:9px;font-family:'JetBrains Mono',monospace;font-weight:700;padding:2px 6px;border-radius:20px}
+</style>
+</head>
+<body class="bg-background text-on-surface font-body-lg pb-24">
+
+<!-- TopBar -->
+<header class="fixed top-0 w-full z-50 shadow-sm bg-surface flex justify-between items-center px-margin-mobile h-14">
+  <div class="flex items-center gap-3">
+    <a href="KEMASKU.html" class="material-symbols-outlined text-primary p-1">arrow_back</a>
+    <h1 class="font-headline-lg-mobile text-[18px] font-bold text-primary">Kasir</h1>
+  </div>
+  <div class="flex items-center gap-2">
+    <!-- Pelanggan -->
+    <button onclick="document.getElementById('pelanggan-sheet').classList.add('show')" class="flex items-center gap-1 bg-surface-container-high px-3 py-1.5 rounded-xl active:scale-95">
+      <span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings:'FILL' 1">person_add</span>
+      <span id="selected-customer-label" class="font-label-md text-[11px] text-on-surface-variant">Tamu</span>
+    </button>
+    <button onclick="document.getElementById('cart-sheet').classList.add('show')" class="relative p-2">
+      <span class="material-symbols-outlined text-primary text-[26px]" style="font-variation-settings:'FILL' 1">shopping_cart</span>
+      <span id="cart-count-badge" class="cart-badge hidden">0</span>
+    </button>
+  </div>
+</header>
+
+<main class="pt-16 px-margin-mobile">
+
+  <!-- Promo Banner -->
+  <div class="my-3 bg-primary-container rounded-2xl p-3 flex items-center gap-3 relative overflow-hidden">
+    <div class="absolute -right-4 -top-4 w-16 h-16 bg-secondary-container opacity-20 rounded-full"></div>
+    <div class="w-10 h-10 rounded-xl bg-secondary-container/20 flex items-center justify-center flex-shrink-0">
+      <span class="material-symbols-outlined text-secondary-container text-[20px]" style="font-variation-settings:'FILL' 1">local_offer</span>
+    </div>
+    <div class="flex-1">
+      <p class="font-body-sm font-bold text-white text-[13px]">Promo Aktif: Diskon Sembako 10%</p>
+      <p class="font-label-md text-primary-fixed-dim text-[11px]">Berlaku sampai 30 Jun 2026</p>
+    </div>
+    <button onclick="document.getElementById('diskon-sheet').classList.add('show')" class="bg-secondary-container text-white font-label-md font-bold text-[11px] px-3 py-1.5 rounded-xl active:scale-95 flex-shrink-0">Pakai</button>
+  </div>
+
+  <!-- Search -->
+  <div class="relative mb-4">
+    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+    <input type="text" placeholder="Cari produk atau scan barcode..." class="w-full pl-10 pr-4 py-3 bg-white border border-outline-variant rounded-xl font-body-sm focus:outline-none focus:ring-2 focus:ring-secondary-container shadow-sm"/>
+  </div>
+
+  <!-- Categories -->
+  <div class="flex gap-2 overflow-x-auto hide-scrollbar mb-4 pb-1">
+    <button onclick="setCat(this,'semua')" class="px-4 py-2 cat-active rounded-full font-label-md text-[12px] whitespace-nowrap">Semua</button>
+    <button onclick="setCat(this,'sembako')" class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-label-md text-[12px] whitespace-nowrap">Sembako</button>
+    <button onclick="setCat(this,'minuman')" class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-label-md text-[12px] whitespace-nowrap">Minuman</button>
+    <button onclick="setCat(this,'snack')" class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-label-md text-[12px] whitespace-nowrap">Snack</button>
+    <button onclick="setCat(this,'rumah')" class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-label-md text-[12px] whitespace-nowrap">Keb. Rumah</button>
+  </div>
+
+  <!-- Product Grid -->
+  <div class="grid grid-cols-2 gap-3 mb-6" id="product-grid">
+    <div class="prod-card bg-white p-3 rounded-xl shadow-sm cursor-pointer" data-cat="minuman" onclick="addToCart('Air Mineral 600ml',3500,this)">
+      <div class="aspect-square rounded-lg bg-surface-container mb-2 overflow-hidden relative">
+        <img src="C:\Users\Advan\OneDrive\Documents\Desktop\VCS\KEMAS TOKO\fOTO\le minerale.jpg" class="w-full h-full object-cover" alt="Air Mineral"/>
+      </div>
+      <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Air Mineral 600ml</p>
+      <p class="font-label-md text-secondary font-bold text-[12px]">Rp 3.500</p>
+      <div class="mt-2 flex justify-between items-center">
+        <span class="text-[9px] bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full font-label-md">Stok: 42</span>
+        <span class="material-symbols-outlined text-secondary-container text-[22px]" style="font-variation-settings:'FILL' 1">add_circle</span>
+      </div>
+    </div>
+    <div class="prod-card bg-white p-3 rounded-xl shadow-sm cursor-pointer" data-cat="sembako" onclick="addToCart('Beras Premium 1kg',14200,this)">
+      <div class="aspect-square rounded-lg bg-surface-container mb-2 overflow-hidden relative">
+        <img src="C:\Users\Advan\OneDrive\Documents\Desktop\VCS\KEMAS TOKO\fOTO\beras.jpg" class="w-full h-full object-cover" alt="Beras"/>
+        <span class="promo-badge absolute top-1.5 left-1.5">-10%</span>
+      </div>
+      <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Beras Premium 1kg</p>
+      <div class="flex items-center gap-1">
+        <p class="font-label-md text-secondary font-bold text-[12px]">Rp 12.780</p>
+        <p class="font-label-md text-outline text-[10px] line-through">14.200</p>
+      </div>
+      <div class="mt-2 flex justify-between items-center">
+        <span class="text-[9px] bg-error-container text-on-error-container px-2 py-0.5 rounded-full font-label-md">Stok Tipis: 5</span>
+        <span class="material-symbols-outlined text-secondary-container text-[22px]" style="font-variation-settings:'FILL' 1">add_circle</span>
+      </div>
+    </div>
+    <div class="prod-card bg-white p-3 rounded-xl shadow-sm cursor-pointer" data-cat="sembako" onclick="addToCart('Minyak Goreng 1L',18000,this)">
+      <div class="aspect-square rounded-lg bg-surface-container mb-2 overflow-hidden relative">
+        <img src="C:\Users\Advan\OneDrive\Documents\Desktop\VCS\KEMAS TOKO\fOTO\minyak.jpg" class="w-full h-full object-cover" alt="Minyak"/>
+      </div>
+      <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Minyak Goreng 1L</p>
+      <p class="font-label-md text-secondary font-bold text-[12px]">Rp 18.000</p>
+      <div class="mt-2 flex justify-between items-center">
+        <span class="text-[9px] bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full font-label-md">Stok: 12</span>
+        <span class="material-symbols-outlined text-secondary-container text-[22px]" style="font-variation-settings:'FILL' 1">add_circle</span>
+      </div>
+    </div>
+    <div class="prod-card bg-white p-3 rounded-xl shadow-sm cursor-pointer" data-cat="sembako" onclick="addToCart('Indomie Goreng',3100,this)">
+      <div class="aspect-square rounded-lg bg-surface-container mb-2 overflow-hidden">
+        <img src="C:\Users\Advan\OneDrive\Documents\Desktop\VCS\KEMAS TOKO\fOTO\indomie.jpg" class="w-full h-full object-cover" alt="Indomie"/>
+      </div>
+      <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Indomie Goreng</p>
+      <p class="font-label-md text-secondary font-bold text-[12px]">Rp 3.100</p>
+      <div class="mt-2 flex justify-between items-center">
+        <span class="text-[9px] bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full font-label-md">Stok: 120</span>
+        <span class="material-symbols-outlined text-secondary-container text-[22px]" style="font-variation-settings:'FILL' 1">add_circle</span>
+      </div>
+    </div>
+    <div class="prod-card bg-white p-3 rounded-xl shadow-sm cursor-pointer" data-cat="minuman" onclick="addToCart('Kopi Kapal Api 165g',12500,this)">
+      <div class="aspect-square rounded-lg bg-surface-container mb-2 overflow-hidden">
+        <img src="C:\Users\Advan\OneDrive\Documents\Desktop\VCS\KEMAS TOKO\fOTO\kopi.jpg" class="w-full h-full object-cover" alt="Kopi"/>
+      </div>
+      <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">coffemix nescafe</p>
+      <p class="font-label-md text-secondary font-bold text-[12px]">Rp 12.500</p>
+      <div class="mt-2 flex justify-between items-center">
+        <span class="text-[9px] bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full font-label-md">Stok: 24</span>
+        <span class="material-symbols-outlined text-secondary-container text-[22px]" style="font-variation-settings:'FILL' 1">add_circle</span>
+      </div>
+    </div>
+    <div class="prod-card bg-white p-3 rounded-xl shadow-sm cursor-pointer" data-cat="sembako" onclick="addToCart('Gula Pasir 1kg',16000,this)">
+      <div class="aspect-square rounded-lg bg-surface-container mb-2 overflow-hidden">
+        <img src="C:\Users\Advan\OneDrive\Documents\Desktop\VCS\KEMAS TOKO\fOTO\gula.jpg" class="w-full h-full object-cover" alt="Gula"/>
+      </div>
+      <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Gula Pasir 1kg</p>
+      <p class="font-label-md text-secondary font-bold text-[12px]">Rp 16.000</p>
+      <div class="mt-2 flex justify-between items-center">
+        <span class="text-[9px] bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full font-label-md">Stok: 50</span>
+        <span class="material-symbols-outlined text-secondary-container text-[22px]" style="font-variation-settings:'FILL' 1">add_circle</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Floating Checkout Bar -->
+<div id="checkout-bar" class="hidden fixed bottom-16 left-0 right-0 z-40 px-4 pb-2">
+  <button onclick="document.getElementById('cart-sheet').classList.add('show')" class="w-full bg-secondary-container text-on-secondary py-4 rounded-2xl flex items-center justify-between px-5 shadow-2xl active:scale-95">
+    <div class="flex items-center gap-3">
+      <span class="bg-white/20 rounded-lg px-2 py-1 font-bold text-[13px]" id="bar-count">0 item</span>
+      <span class="font-body-sm font-bold">Lihat Keranjang</span>
+    </div>
+    <span id="bar-total" class="font-title-md font-extrabold">Rp 0</span>
+  </button>
+</div>
+
+<!-- Cart Sheet -->
+<div id="cart-sheet">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="document.getElementById('cart-sheet').classList.remove('show')"></div>
+  <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl z-10 flex flex-col slide-up" style="max-height:90vh">
+    <div class="p-4 border-b border-outline-variant flex-shrink-0">
+      <div class="w-10 h-1.5 bg-outline-variant rounded-full mx-auto mb-3"></div>
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="font-title-md text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">shopping_cart</span>
+          Keranjang (<span id="cart-count">0</span>)
+        </h2>
+        <button onclick="clearCart()" class="text-error font-label-md text-[12px] font-bold">Hapus Semua</button>
+      </div>
+      <!-- Pelanggan Info -->
+      <div id="customer-info-bar" class="hidden bg-surface-container-high px-3 py-2 rounded-xl flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings:'FILL' 1">person</span>
+        <span id="customer-info-name" class="font-label-md text-primary font-bold text-[12px]"></span>
+        <span class="font-label-md text-on-surface-variant text-[11px]">· Poin: <span id="customer-poin">0</span></span>
+      </div>
+    </div>
+    <div id="cart-items" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+    <div class="p-4 border-t border-outline-variant space-y-3 flex-shrink-0">
+      <!-- Diskon Row -->
+      <div class="flex items-center justify-between py-2 border-b border-outline-variant">
+        <button onclick="document.getElementById('cart-sheet').classList.remove('show');setTimeout(()=>document.getElementById('diskon-sheet').classList.add('show'),200)" class="flex items-center gap-2 text-secondary-container font-label-md font-bold text-[12px] active:scale-95">
+          <span class="material-symbols-outlined text-[18px]" style="font-variation-settings:'FILL' 1">local_offer</span>
+          <span id="diskon-label">+ Tambah Diskon / Promo</span>
+        </button>
+        <span id="diskon-display" class="font-label-md font-bold text-on-tertiary-container text-[12px] hidden">- Rp 0</span>
+      </div>
+      <!-- Payment method -->
+      <div class="flex gap-2">
+        <button onclick="setPayment('tunai',this)" class="flex-1 py-2 rounded-xl border-2 border-primary bg-primary text-on-primary font-label-md text-[12px] font-bold active:scale-95">💵 Tunai</button>
+        <button onclick="setPayment('qris',this)" class="flex-1 py-2 rounded-xl border-2 border-outline-variant text-on-surface-variant font-label-md text-[12px] font-bold active:scale-95">📱 QRIS</button>
+        <button onclick="setPayment('transfer',this)" class="flex-1 py-2 rounded-xl border-2 border-outline-variant text-on-surface-variant font-label-md text-[12px] font-bold active:scale-95">🏦 Transfer</button>
+      </div>
+      <div class="space-y-1">
+        <div class="flex justify-between items-center">
+          <span class="font-body-sm text-on-surface-variant">Subtotal</span>
+          <span id="cart-subtotal" class="font-body-sm text-on-surface">Rp 0</span>
+        </div>
+        <div id="diskon-row" class="hidden flex justify-between items-center">
+          <span class="font-body-sm text-on-tertiary-container">Diskon</span>
+          <span id="cart-diskon-val" class="font-body-sm text-on-tertiary-container font-bold">- Rp 0</span>
+        </div>
+        <div class="flex justify-between items-center pt-1 border-t border-outline-variant">
+          <span class="font-body-sm font-bold text-on-surface">Total Bayar</span>
+          <span id="cart-total" class="font-headline-lg-mobile text-primary font-extrabold">Rp 0</span>
+        </div>
+      </div>
+      <button onclick="checkout()" class="w-full bg-primary text-on-primary py-4 rounded-xl font-title-md shadow-lg active:scale-95">Proses Pembayaran</button>
+    </div>
+  </div>
+</div>
+
+<!-- Diskon Sheet -->
+<div id="diskon-sheet">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="document.getElementById('diskon-sheet').classList.remove('show')"></div>
+  <div class="absolute bottom-0 left-0 right-0 bg-surface rounded-t-3xl z-10 slide-up">
+    <div class="p-5">
+      <div class="w-10 h-1.5 bg-outline-variant rounded-full mx-auto mb-4"></div>
+      <h3 class="font-title-md text-primary font-bold mb-1">Diskon & Promo</h3>
+      <p class="font-label-md text-on-surface-variant text-[11px] mb-4">Pilih salah satu atau masukkan kode promo</p>
+
+      <!-- Promo Tersedia -->
+      <div class="space-y-2 mb-4">
+        <button onclick="applyDiskon('persen',10,'Promo Sembako 10%')" class="w-full flex items-center justify-between bg-surface-container-low p-3 rounded-xl border border-outline-variant active:scale-95">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-secondary-container/20 flex items-center justify-center">
+              <span class="material-symbols-outlined text-secondary-container text-[20px]" style="font-variation-settings:'FILL' 1">local_offer</span>
+            </div>
+            <div class="text-left">
+              <p class="font-body-sm font-bold text-[13px]">Promo Sembako 10%</p>
+              <p class="font-label-md text-on-surface-variant text-[11px]">Berlaku s.d 30 Jun 2026</p>
+            </div>
+          </div>
+          <span class="font-label-md font-bold text-secondary-container text-[13px]">-10%</span>
+        </button>
+        <button onclick="applyDiskon('persen',5,'Member Poin 5%')" class="w-full flex items-center justify-between bg-surface-container-low p-3 rounded-xl border border-outline-variant active:scale-95">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-on-primary-container text-[20px]" style="font-variation-settings:'FILL' 1">star</span>
+            </div>
+            <div class="text-left">
+              <p class="font-body-sm font-bold text-[13px]">Member Poin 5%</p>
+              <p class="font-label-md text-on-surface-variant text-[11px]">Untuk pelanggan terdaftar</p>
+            </div>
+          </div>
+          <span class="font-label-md font-bold text-primary text-[13px]">-5%</span>
+        </button>
+        <button onclick="applyDiskon('nominal',5000,'Diskon Langsung Rp5rb')" class="w-full flex items-center justify-between bg-surface-container-low p-3 rounded-xl border border-outline-variant active:scale-95">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-tertiary-fixed flex items-center justify-center">
+              <span class="material-symbols-outlined text-on-tertiary-fixed-variant text-[20px]" style="font-variation-settings:'FILL' 1">payments</span>
+            </div>
+            <div class="text-left">
+              <p class="font-body-sm font-bold text-[13px]">Diskon Langsung Rp 5.000</p>
+              <p class="font-label-md text-on-surface-variant text-[11px]">Min. belanja Rp 50.000</p>
+            </div>
+          </div>
+          <span class="font-label-md font-bold text-on-tertiary-container text-[13px]">-Rp5rb</span>
+        </button>
+      </div>
+
+      <!-- Kode Manual -->
+      <div class="bg-surface-container-high p-3 rounded-xl mb-4">
+        <p class="font-label-md text-on-surface-variant text-[11px] uppercase tracking-wider mb-2">Kode Promo</p>
+        <div class="flex gap-2">
+          <input id="kode-promo" type="text" placeholder="Masukkan kode promo..." class="flex-1 px-3 py-2 rounded-xl border border-outline-variant font-body-sm text-[13px] focus:outline-none focus:ring-2 focus:ring-secondary-container bg-white"/>
+          <button onclick="applyKodePromo()" class="bg-secondary-container text-white px-4 py-2 rounded-xl font-label-md font-bold text-[12px] active:scale-95">Pakai</button>
+        </div>
+      </div>
+
+      <button onclick="hapusDiskon()" class="w-full py-3 rounded-xl bg-error-container text-error font-bold font-body-sm active:scale-95 mb-2">Hapus Diskon</button>
+      <button onclick="document.getElementById('diskon-sheet').classList.remove('show')" class="w-full py-3 rounded-xl bg-surface-container-high text-primary font-bold font-body-sm active:scale-95">Selesai</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pelanggan Sheet -->
+<div id="pelanggan-sheet">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="document.getElementById('pelanggan-sheet').classList.remove('show')"></div>
+  <div class="absolute bottom-0 left-0 right-0 bg-surface rounded-t-3xl z-10 slide-up max-h-[80vh] overflow-y-auto">
+    <div class="p-5">
+      <div class="w-10 h-1.5 bg-outline-variant rounded-full mx-auto mb-4"></div>
+      <h3 class="font-title-md text-primary font-bold mb-1">Pilih Pelanggan</h3>
+      <p class="font-label-md text-on-surface-variant text-[11px] mb-4">Hubungkan transaksi ke pelanggan untuk poin reward</p>
+      <div class="relative mb-3">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+        <input type="text" placeholder="Cari nama atau nomor..." class="w-full pl-9 pr-4 py-2.5 bg-white border border-outline-variant rounded-xl font-body-sm text-[13px] focus:outline-none focus:ring-2 focus:ring-secondary-container"/>
+      </div>
+      <div class="space-y-2 mb-3">
+        <button onclick="selectCustomer('Bu Ani','VIP',2480)" class="w-full flex items-center gap-3 p-3 bg-white border border-outline-variant rounded-xl active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center font-bold text-on-primary-container text-[12px] flex-shrink-0">BA</div>
+          <div class="flex-1 text-left">
+            <p class="font-body-sm font-bold text-[13px]">Bu Ani</p>
+            <p class="font-label-md text-on-surface-variant text-[10px]">47 transaksi · Poin: 2.480</p>
+          </div>
+          <span class="bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-[9px] px-2 py-0.5 rounded-full font-bold">VIP</span>
+        </button>
+        <button onclick="selectCustomer('Pak Hendra','Reguler',780)" class="w-full flex items-center gap-3 p-3 bg-white border border-outline-variant rounded-xl active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center font-bold text-secondary text-[12px] flex-shrink-0">PH</div>
+          <div class="flex-1 text-left">
+            <p class="font-body-sm font-bold text-[13px]">Pak Hendra</p>
+            <p class="font-label-md text-on-surface-variant text-[10px]">31 transaksi · Poin: 780</p>
+          </div>
+          <span class="bg-surface-container-high text-on-surface-variant font-label-md text-[9px] px-2 py-0.5 rounded-full font-bold">Reguler</span>
+        </button>
+        <button onclick="selectCustomer('Siti Rahma','Baru',145)" class="w-full flex items-center gap-3 p-3 bg-white border border-outline-variant rounded-xl active:scale-95">
+          <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-primary text-[12px] flex-shrink-0">SR</div>
+          <div class="flex-1 text-left">
+            <p class="font-body-sm font-bold text-[13px]">Siti Rahma</p>
+            <p class="font-label-md text-on-surface-variant text-[10px]">8 transaksi · Poin: 145</p>
+          </div>
+          <span class="bg-surface-container-high text-on-surface-variant font-label-md text-[9px] px-2 py-0.5 rounded-full font-bold">Baru</span>
+        </button>
+      </div>
+      <button onclick="selectCustomer(null)" class="w-full py-3 rounded-xl bg-surface-container-high text-on-surface-variant font-bold font-body-sm active:scale-95">Lanjut sebagai Tamu</button>
+    </div>
+  </div>
+</div>
+
+<!-- Receipt Modal -->
+<div id="receipt-modal">
+  <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+  <div class="absolute top-1/2 left-4 right-4 -translate-y-1/2 bg-white rounded-3xl p-6 z-10 shadow-2xl">
+    <div class="text-center mb-5">
+      <div class="w-16 h-16 bg-tertiary-fixed rounded-full flex items-center justify-center mx-auto mb-3">
+        <span class="material-symbols-outlined text-on-tertiary-fixed-variant text-[32px]" style="font-variation-settings:'FILL' 1">check_circle</span>
+      </div>
+      <h2 class="font-headline-lg-mobile text-primary font-extrabold">Pembayaran Berhasil!</h2>
+      <p class="font-body-sm text-on-surface-variant mt-1">Transaksi #TRX-<span id="trx-num">0048</span></p>
+    </div>
+    <div class="bg-surface-container-low rounded-xl p-4 mb-4 space-y-2">
+      <div class="flex justify-between"><span class="font-body-sm text-on-surface-variant">Subtotal</span><span id="receipt-subtotal" class="font-body-sm font-bold text-primary">Rp 0</span></div>
+      <div id="receipt-diskon-row" class="hidden flex justify-between"><span class="font-body-sm text-on-tertiary-container">Diskon</span><span id="receipt-diskon-val" class="font-body-sm font-bold text-on-tertiary-container">- Rp 0</span></div>
+      <div class="flex justify-between border-t border-outline-variant pt-2"><span class="font-body-sm font-bold">Total</span><span id="receipt-total" class="font-body-sm font-bold text-primary">Rp 0</span></div>
+      <div class="flex justify-between"><span class="font-body-sm text-on-surface-variant">Metode</span><span id="receipt-method" class="font-body-sm font-bold">Tunai</span></div>
+      <div class="flex justify-between"><span class="font-body-sm text-on-surface-variant">Waktu</span><span id="receipt-time" class="font-body-sm font-bold">-</span></div>
+      <div id="receipt-poin-row" class="hidden flex justify-between"><span class="font-body-sm text-on-surface-variant">Poin Didapat</span><span id="receipt-poin" class="font-body-sm font-bold text-on-tertiary-container">+0 poin</span></div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <button onclick="closeReceipt()" class="py-3 rounded-xl bg-surface-container-high text-primary font-bold font-body-sm active:scale-95">🖨 Cetak Struk</button>
+      <button onclick="closeReceipt()" class="py-3 rounded-xl bg-secondary-container text-on-secondary font-bold font-body-sm active:scale-95">Transaksi Baru</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 w-full z-50 shadow-lg bg-surface border-t border-outline-variant flex justify-around items-center h-16 px-2">
+  <a href="KEMASKU.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90">
+    <span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-md text-[10px]">Home</span>
+  </a>
+  <a href="KEMASKASIR.html" class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary rounded-xl px-4 py-1 active:scale-90 shadow-sm">
+    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1">point_of_sale</span><span class="font-label-md text-[10px] font-bold">Cashier</span>
+  </a>
+  <a href="STOKTOKO.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90">
+    <span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-label-md text-[10px]">Stock</span>
+  </a>
+  <a href="KEMASMARKET.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90">
+    <span class="material-symbols-outlined text-[20px]">storefront</span><span class="font-label-md text-[10px]">Market</span>
+  </a>
+  <a href="KEMASUANG.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90">
+    <span class="material-symbols-outlined text-[20px]">payments</span><span class="font-label-md text-[10px]">Finance</span>
+  </a>
+</nav>
+
+<script>
+let cart={};let payMethod='tunai';let trxCounter=48;
+let diskon={type:null,value:0,label:''};
+let selectedCustomer=null;
+
+function fmtRp(n){return'Rp '+Math.round(n).toLocaleString('id-ID')}
+function addToCart(name,price,el){
+  if(!cart[name])cart[name]={price,qty:0};
+  cart[name].qty++;
+  el.style.outline='2px solid #fc7728';
+  setTimeout(()=>el.style.outline='',400);
+  updateUI();
+}
+function removeFromCart(name){if(cart[name]){cart[name].qty--;if(cart[name].qty<=0)delete cart[name];updateUI()}}
+function clearCart(){cart={};updateUI()}
+function addToCartDirect(name,price){if(!cart[name])cart[name]={price,qty:0};cart[name].qty++;updateUI()}
+function calcSubtotal(){return Object.values(cart).reduce((s,v)=>s+v.price*v.qty,0)}
+function calcDiskon(sub){
+  if(!diskon.type)return 0;
+  if(diskon.type==='persen')return Math.round(sub*diskon.value/100);
+  return Math.min(diskon.value,sub);
+}
+function updateUI(){
+  const sub=calcSubtotal();
+  const dis=calcDiskon(sub);
+  const total=Math.max(0,sub-dis);
+  const count=Object.values(cart).reduce((s,v)=>s+v.qty,0);
+  document.getElementById('cart-count').textContent=count;
+  document.getElementById('cart-subtotal').textContent=fmtRp(sub);
+  document.getElementById('cart-total').textContent=fmtRp(total);
+  document.getElementById('bar-count').textContent=count+' item';
+  document.getElementById('bar-total').textContent=fmtRp(total);
+  const badge=document.getElementById('cart-count-badge');
+  const bar=document.getElementById('checkout-bar');
+  if(count>0){badge.textContent=count;badge.classList.remove('hidden');bar.classList.remove('hidden')}
+  else{badge.classList.add('hidden');bar.classList.add('hidden')}
+  // Diskon UI
+  if(dis>0){
+    document.getElementById('diskon-label').textContent=diskon.label;
+    document.getElementById('diskon-display').textContent='- '+fmtRp(dis);
+    document.getElementById('diskon-display').classList.remove('hidden');
+    document.getElementById('diskon-row').classList.remove('hidden');
+    document.getElementById('cart-diskon-val').textContent='- '+fmtRp(dis);
+  } else {
+    document.getElementById('diskon-label').textContent='+ Tambah Diskon / Promo';
+    document.getElementById('diskon-display').classList.add('hidden');
+    document.getElementById('diskon-row').classList.add('hidden');
+  }
+  // Cart items
+  const items=document.getElementById('cart-items');
+  if(Object.keys(cart).length===0){
+    items.innerHTML='<div class="text-center py-8 text-on-surface-variant"><span class="material-symbols-outlined text-[40px] opacity-30">shopping_cart</span><p class="font-body-sm mt-2">Keranjang kosong</p></div>';
+    return;
+  }
+  items.innerHTML=Object.entries(cart).map(([name,{price,qty}])=>`
+    <div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl">
+      <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center flex-shrink-0 font-bold text-primary text-[13px]">${qty}x</div>
+      <div class="flex-1 min-w-0"><p class="font-body-sm font-semibold truncate">${name}</p><p class="font-label-md text-on-surface-variant text-[11px]">${fmtRp(price)} / item</p></div>
+      <div class="text-right flex-shrink-0">
+        <p class="font-label-md font-bold text-primary">${fmtRp(price*qty)}</p>
+        <div class="flex items-center gap-1 mt-1 justify-end">
+          <button onclick="removeFromCart('${name}')" class="w-6 h-6 rounded-md bg-surface-container flex items-center justify-center active:scale-90"><span class="material-symbols-outlined text-[14px]">remove</span></button>
+          <button onclick="addToCartDirect('${name}',${price})" class="w-6 h-6 rounded-md bg-secondary-container flex items-center justify-center active:scale-90"><span class="material-symbols-outlined text-[14px] text-on-secondary">add</span></button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function setPayment(m,el){
+  payMethod=m;
+  document.querySelectorAll('#cart-sheet button[onclick^="setPayment"]').forEach(b=>{b.classList.remove('border-primary','bg-primary','text-on-primary');b.classList.add('border-outline-variant','text-on-surface-variant')});
+  el.classList.add('border-primary','bg-primary','text-on-primary');el.classList.remove('border-outline-variant','text-on-surface-variant');
+}
+function applyDiskon(type,value,label){
+  diskon={type,value,label};
+  document.getElementById('diskon-sheet').classList.remove('show');
+  updateUI();
+}
+function applyKodePromo(){
+  const kode=document.getElementById('kode-promo').value.trim().toUpperCase();
+  if(kode==='KEMAS10'){applyDiskon('persen',10,'Kode KEMAS10');}
+  else if(kode==='HEMAT5K'){applyDiskon('nominal',5000,'Kode HEMAT5K');}
+  else{showToast('⚠ Kode promo tidak valid');}
+}
+function hapusDiskon(){diskon={type:null,value:0,label:''};document.getElementById('diskon-sheet').classList.remove('show');updateUI();}
+function selectCustomer(name,tier,poin){
+  selectedCustomer=name?{name,tier,poin}:null;
+  document.getElementById('selected-customer-label').textContent=name||'Tamu';
+  const bar=document.getElementById('customer-info-bar');
+  const customerName=document.getElementById('customer-info-name');
+  const customerPoin=document.getElementById('customer-poin');
+  if(name){bar.classList.remove('hidden');customerName.textContent=name;customerPoin.textContent=poin.toLocaleString('id-ID');}
+  else{bar.classList.add('hidden');}
+  document.getElementById('pelanggan-sheet').classList.remove('show');
+}
+function checkout(){
+  if(Object.keys(cart).length===0){showToast('⚠ Tambah produk dulu!');return}
+  const sub=calcSubtotal();
+  const dis=calcDiskon(sub);
+  const total=Math.max(0,sub-dis);
+  const now=new Date();
+  const poinDapat=Math.floor(total/1000);
+  document.getElementById('receipt-subtotal').textContent=fmtRp(sub);
+  document.getElementById('receipt-total').textContent=fmtRp(total);
+  document.getElementById('receipt-method').textContent=payMethod.charAt(0).toUpperCase()+payMethod.slice(1);
+  document.getElementById('receipt-time').textContent=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+' WIB';
+  document.getElementById('trx-num').textContent=String(++trxCounter).padStart(4,'0');
+  if(dis>0){
+    document.getElementById('receipt-diskon-row').classList.remove('hidden');
+    document.getElementById('receipt-diskon-val').textContent='- '+fmtRp(dis);
+  } else { document.getElementById('receipt-diskon-row').classList.add('hidden'); }
+  if(selectedCustomer){
+    document.getElementById('receipt-poin-row').classList.remove('hidden');
+    document.getElementById('receipt-poin').textContent='+'+poinDapat+' poin';
+  } else { document.getElementById('receipt-poin-row').classList.add('hidden'); }
+  document.getElementById('cart-sheet').classList.remove('show');
+  document.getElementById('receipt-modal').classList.add('show');
+}
+function closeReceipt(){cart={};diskon={type:null,value:0,label:''};document.getElementById('receipt-modal').classList.remove('show');updateUI()}
+function setCat(el,cat){
+  document.querySelectorAll('#product-grid div[data-cat]').forEach(d=>{d.style.display=cat==='semua'||d.dataset.cat===cat?'block':'none'});
+  document.querySelectorAll('[onclick^="setCat"]').forEach(b=>{b.classList.remove('cat-active','text-white');b.classList.add('bg-surface-container-high','text-on-surface-variant')});
+  el.classList.add('cat-active');el.classList.remove('bg-surface-container-high','text-on-surface-variant');
+}
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#001e40;color:white;padding:12px 20px;border-radius:14px;font-family:JetBrains Mono,monospace;font-size:12px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,30,64,.3)';
+  t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+updateUI();
+</script>
+</body>
+</html>

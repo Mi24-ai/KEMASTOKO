@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KemasToko - Market</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config={darkMode:"class",theme:{extend:{colors:{"secondary-container":"#fc7728","on-surface-variant":"#43474f","on-secondary":"#ffffff","on-surface":"#0b1c30","surface-container-high":"#dce9ff","background":"#f8f9ff","error-container":"#ffdad6","secondary":"#a04100","primary-fixed-dim":"#a7c8ff","on-primary":"#ffffff","secondary-fixed":"#ffdbcb","surface-container-lowest":"#ffffff","outline":"#737780","surface-variant":"#d3e4fe","on-tertiary-fixed":"#00210d","outline-variant":"#c3c6d1","on-tertiary-fixed-variant":"#005228","tertiary-fixed":"#77fca3","on-tertiary-container":"#1db262","on-background":"#0b1c30","on-secondary-fixed":"#341000","on-secondary-container":"#5d2300","tertiary-container":"#003c1c","on-error-container":"#93000a","surface-dim":"#cbdbf5","inverse-primary":"#a7c8ff","surface-container":"#e5eeff","tertiary":"#00240e","tertiary-fixed-dim":"#59df89","primary":"#001e40","inverse-on-surface":"#eaf1ff","error":"#ba1a1a","primary-fixed":"#d5e3ff","surface-tint":"#3a5f94","surface-container-highest":"#d3e4fe","on-secondary-fixed-variant":"#7a3000","surface":"#f8f9ff","secondary-fixed-dim":"#ffb693","surface-container-low":"#eff4ff","surface-bright":"#f8f9ff","on-error":"#ffffff","on-primary-container":"#799dd6","on-primary-fixed":"#001b3c","primary-container":"#003366","on-primary-fixed-variant":"#1f477b"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"xs":"4px","gutter":"16px","lg":"24px","margin-mobile":"16px","xl":"32px","md":"16px","base":"4px","margin-desktop":"64px","sm":"8px"},fontFamily:{"headline-lg-mobile":["Manrope"],"title-md":["Manrope"],"headline-lg":["Manrope"],"display-lg":["Manrope"],"body-lg":["Inter"],"body-sm":["Inter"],"label-md":["JetBrains Mono"]},fontSize:{"headline-lg-mobile":["24px",{"lineHeight":"32px","fontWeight":"600"}],"title-md":["20px",{"lineHeight":"28px","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"40px","fontWeight":"600"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"body-sm":["14px",{"lineHeight":"20px","fontWeight":"400"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"500"}]}}}}
+</script>
+<style>
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transparent;min-height:max(884px,100dvh)}
+.hide-scrollbar::-webkit-scrollbar{display:none}.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+.prod-card{transition:all .15s cubic-bezier(.34,1.56,.64,1);border:1px solid #e5eeff}
+.prod-card:active{transform:scale(.94)}
+.cat-chip{transition:all .15s}
+.cat-active{background:#001e40;color:white}
+#order-sheet{display:none;position:fixed;inset:0;z-index:200}
+#order-sheet.show{display:flex}
+#order-confirm{display:none;position:fixed;inset:0;z-index:300}
+#order-confirm.show{display:flex}
+</style>
+</head>
+<body class="pb-24 font-body-lg text-on-surface">
+
+<!-- TopBar -->
+<header class="fixed top-0 w-full z-50 shadow-sm bg-surface flex justify-between items-center px-margin-mobile h-14">
+  <div class="flex items-center gap-3">
+    <a href="KEMASKU.html" class="material-symbols-outlined text-primary p-1">arrow_back</a>
+    <div>
+      <h1 class="font-headline-lg-mobile text-[17px] font-bold text-primary leading-tight">KEMAS Market</h1>
+      <p class="font-label-md text-on-surface-variant text-[10px]">Supplier langsung ke toko</p>
+    </div>
+  </div>
+  <div class="flex gap-1">
+    <button class="material-symbols-outlined text-primary p-2 rounded-full hover:bg-surface-container-low active:scale-95">shopping_cart</button>
+    <button class="material-symbols-outlined text-primary p-2 rounded-full hover:bg-surface-container-low active:scale-95">notifications</button>
+  </div>
+</header>
+
+<main class="pt-16 px-margin-mobile">
+
+  <!-- Hero Banner -->
+  <div class="my-4 bg-primary-container rounded-2xl p-4 relative overflow-hidden">
+    <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-secondary-container opacity-20 rounded-full"></div>
+    <div class="absolute top-2 right-4 w-12 h-12 bg-on-primary-fixed-variant opacity-15 rounded-full"></div>
+    <p class="font-label-md text-primary-fixed-dim text-[10px] uppercase tracking-widest mb-1">Penawaran Spesial</p>
+    <h2 class="font-headline-lg-mobile text-white font-extrabold text-[18px]">Diskon 15% untuk<br/>Pemesanan Batch</h2>
+    <p class="font-body-sm text-primary-fixed-dim mt-1 text-[12px]">Min. pembelian Rp 500.000 per distributor</p>
+    <span class="inline-block mt-2 bg-secondary-container text-on-secondary font-label-md text-[11px] px-3 py-1 rounded-full font-bold">Berlaku s.d. 30 Juni 2026</span>
+  </div>
+
+  <!-- Search -->
+  <div class="relative mb-3">
+    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+    <input type="text" placeholder="Cari produk dari distributor..." class="w-full pl-10 pr-4 py-3 bg-white border border-outline-variant rounded-xl font-body-sm focus:outline-none focus:ring-2 focus:ring-secondary-container shadow-sm"/>
+  </div>
+
+  <!-- Category Chips -->
+  <div class="flex gap-2 overflow-x-auto hide-scrollbar mb-5 pb-1">
+    <button onclick="setCat(this,'semua')" class="cat-chip cat-active px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">Semua</button>
+    <button onclick="setCat(this,'sembako')" class="cat-chip bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">🍚 Sembako</button>
+    <button onclick="setCat(this,'minuman')" class="cat-chip bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">🥤 Minuman</button>
+    <button onclick="setCat(this,'snack')" class="cat-chip bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">🍿 Snack</button>
+    <button onclick="setCat(this,'hygiene')" class="cat-chip bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">🧴 Hygiene</button>
+  </div>
+
+  <!-- Distributor Spotlight -->
+  <div class="flex justify-between items-center mb-3">
+    <h2 class="font-title-md text-primary text-[16px]">Mitra Distributor</h2>
+    <span class="font-label-md text-secondary-container text-[11px] font-bold">Terverifikasi ✓</span>
+  </div>
+  <div class="flex gap-3 overflow-x-auto hide-scrollbar mb-5 pb-2">
+    <div class="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer" onclick="filterDist('Indofood')">
+      <div class="w-14 h-14 rounded-2xl bg-white border-2 border-secondary-container flex items-center justify-center shadow-sm">
+        <span class="font-bold text-primary text-[11px] text-center leading-tight">Indo food</span>
+      </div>
+      <span class="font-label-md text-[10px] text-on-surface-variant">Indofood</span>
+    </div>
+    <div class="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer" onclick="filterDist('Wings')">
+      <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant flex items-center justify-center shadow-sm">
+        <span class="font-bold text-primary text-[11px]">Wings</span>
+      </div>
+      <span class="font-label-md text-[10px] text-on-surface-variant">Wings</span>
+    </div>
+    <div class="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer" onclick="filterDist('Unilever')">
+      <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant flex items-center justify-center shadow-sm">
+        <span class="font-bold text-primary text-[11px]">Unilever</span>
+      </div>
+      <span class="font-label-md text-[10px] text-on-surface-variant">Unilever</span>
+    </div>
+    <div class="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer" onclick="filterDist('Mayora')">
+      <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant flex items-center justify-center shadow-sm">
+        <span class="font-bold text-primary text-[11px]">Mayora</span>
+      </div>
+      <span class="font-label-md text-[10px] text-on-surface-variant">Mayora</span>
+    </div>
+    <div class="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer" onclick="filterDist('Garudafood')">
+      <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant flex items-center justify-center shadow-sm">
+        <span class="font-bold text-primary text-[11px] text-center leading-tight">Garuda food</span>
+      </div>
+      <span class="font-label-md text-[10px] text-on-surface-variant">Garudafood</span>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div class="flex justify-between items-center mb-3">
+    <h2 class="font-title-md text-primary text-[16px]">Produk Terlaris</h2>
+    <div class="flex gap-2">
+      <button class="p-2 bg-surface-container rounded-lg border border-outline-variant flex items-center gap-1 font-label-md text-[11px] active:scale-95">
+        <span class="material-symbols-outlined text-[14px]">filter_list</span> Filter
+      </button>
+      <button class="p-2 bg-surface-container rounded-lg border border-outline-variant flex items-center gap-1 font-label-md text-[11px] active:scale-95">
+        <span class="material-symbols-outlined text-[14px]">sort</span> Urutkan
+      </button>
+    </div>
+  </div>
+
+  <div id="product-grid" class="grid grid-cols-2 gap-3 mb-6">
+    <!-- Indomie -->
+    <div class="prod-card bg-white p-3 rounded-xl shadow-sm" data-cat="sembako" data-dist="Indofood" onclick="openOrder('Indomie Goreng','Indofood','Rp 2.800/pcs','Min. 1 karton (40 pcs)')">
+      <div class="aspect-square rounded-xl bg-surface-container mb-2 overflow-hidden relative">
+        <img src="https://lh3.googleusercontent.com/aida/AP1WRLtI5-rtNgXKUlsFCW58syzgUuyPS5JPzGGr-OraJ1UOmL7FXHZhLlYgewIlo_Eyp_3kHPls3S0wJrevnSixpqgBVJwCgPN3ugFeYiBQgmHX31HkBoQB7rpW0tShSUwNCHV2Cf4qA_Iystexvprn-OsWHLKFkdjn-a4bbPxLhU3l5O3VhIoSwJTr2f5NYTZAnnXa5Yjpv3v4D4NsiXlmIqIiICu1co8DR6AjwrLtYZDl4mjEHfWNROqKpA" class="w-full h-full object-cover" alt="Indomie"/>
+        <span class="absolute top-2 left-2 bg-tertiary-fixed text-on-tertiary-fixed text-[9px] px-2 py-0.5 rounded-full font-bold">🔥 Terlaris</span>
+      </div>
+      <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Indomie Goreng</p>
+      <p class="font-label-md text-secondary-container font-bold text-[12px]">Rp 2.800<span class="text-outline font-normal">/pcs</span></p>
+      <p class="font-label-md text-on-surface-variant text-[10px]">Indofood · Min. 1 karton</p>
+      <button class="w-full mt-2 bg-secondary-container text-on-secondary h-9 rounded-lg font-label-md font-bold text-[12px] active:scale-95 transition-transform">+ Pesan</button>
+    </div>
+    <!-- Air Mineral -->
+    <div class="prod-card bg-white p-3 rounded-xl shadow-sm" data-cat="minuman" data-dist="Indofood" onclick="openOrder('Air Mineral AQUA 600ml','Danone','Rp 2.200/btl','Min. 1 dus (24 btl)')">
+      <div class="aspect-square rounded-xl bg-surface-container mb-2 overflow-hidden relative">
+        <img src="https://lh3.googleusercontent.com/aida/AP1WRLtRo4BK6dIbwGVv50lRCEuYDEMnEhImemI4xGwFq1DUi-q0TqYKyJTQj26za9s-HLSrn8UcuXprw-X6A5JbqE4wVaszqVNBRqrkQMLX6ZGc2JSHlrPUqzPLGUc_Gba1__aHwv7gl8yt904ROuyBzJQVVXjEVl08bzm7K9WOILRR3_e1uU3pyKaoarN85oa3BNHMo8TM59V3vBsrog6GkQ8324XWAcVpAlLxkj3PyxE3LPtZGo4KERDq0g" class="w-full h-full object-cover" alt="Air Mineral"/>
+        <span class="absolute top-2 left-2 bg-secondary-fixed text-on-secondary-fixed text-[9px] px-2 py-0.5 rounded-full font-bold">-10%</span>
+      </div>
+      <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Air Mineral AQUA 600ml</p>
+      <p class="font-label-md text-secondary-container font-bold text-[12px]">Rp 2.200<span class="text-outline font-normal">/btl</span></p>
+      <p class="font-label-md text-on-surface-variant text-[10px]">Danone · Min. 1 dus</p>
+      <button class="w-full mt-2 bg-secondary-container text-on-secondary h-9 rounded-lg font-label-md font-bold text-[12px] active:scale-95 transition-transform">+ Pesan</button>
+    </div>
+    <!-- Gula -->
+    <div class="prod-card bg-white p-3 rounded-xl shadow-sm" data-cat="sembako" data-dist="Lain" onclick="openOrder('Gula Pasir Gulaku 1kg','PT Gulaku','Rp 13.500/kg','Min. 10 kg')">
+      <div class="aspect-square rounded-xl bg-surface-container mb-2 overflow-hidden">
+        <img src="https://lh3.googleusercontent.com/aida/AP1WRLtW-mwknNe-_ywgfzzgu-xgqNjxo898vLjPXlpNA7GNKhRQygALYlxnCtJsOyJe_0Rs6Lyp4fTjdhYj6X_GQ2P03Fn5LSpoBWS6oFM7epgvRHxSyHIwLzxa7AAtngh5xAbNe8r3FlYiPOFdiRWBrkDf_Q6S8EwBtil7XeI73v3WtGodlJe21c9aYKvnKQYtHOOJvHxw-EBpetHlWjuZRpxJ5o3h-UuFp9I067wObJbfmNWNsAhQ7HsUWg" class="w-full h-full object-cover" alt="Gula"/>
+      </div>
+      <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Gula Pasir Gulaku 1kg</p>
+      <p class="font-label-md text-secondary-container font-bold text-[12px]">Rp 13.500<span class="text-outline font-normal">/kg</span></p>
+      <p class="font-label-md text-on-surface-variant text-[10px]">PT Gulaku · Min. 10 kg</p>
+      <button class="w-full mt-2 bg-secondary-container text-on-secondary h-9 rounded-lg font-label-md font-bold text-[12px] active:scale-95 transition-transform">+ Pesan</button>
+    </div>
+    <!-- Sabun -->
+    <div class="prod-card bg-white p-3 rounded-xl shadow-sm" data-cat="hygiene" data-dist="Unilever" onclick="openOrder('Sabun Cuci Sunlight 750ml','Unilever','Rp 11.500/btl','Min. 1 karton (12 btl)')">
+      <div class="aspect-square rounded-xl bg-surface-container mb-2 overflow-hidden">
+        <img src="https://lh3.googleusercontent.com/aida/AP1WRLujHQ_oSRkFssHp0Hb5a_X3ybA2ix8qW4SS5cR2NtxajeHNem8wS3hU27FRWjgslWwgnvMKqP0gLaAFikOe6JsRwRi0goKcBgRYzG_-pbkNWX25RipXvWnjRz88fneFxkNJIBnpoXjva600vAcN97dWec3xP2TOt-teLc5idObBGYCNXuF--zJlYHXaeMco1gDxHzeGuHUehionWcfAYm2SQpMRCHEiqWBD4oynoaZPeobJfFpM69ISJQ" class="w-full h-full object-cover" alt="Sabun"/>
+      </div>
+      <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Sabun Cuci Sunlight</p>
+      <p class="font-label-md text-secondary-container font-bold text-[12px]">Rp 11.500<span class="text-outline font-normal">/btl</span></p>
+      <p class="font-label-md text-on-surface-variant text-[10px]">Unilever · Min. 1 karton</p>
+      <button class="w-full mt-2 bg-secondary-container text-on-secondary h-9 rounded-lg font-label-md font-bold text-[12px] active:scale-95 transition-transform">+ Pesan</button>
+    </div>
+    <!-- Roma Kelapa -->
+    <div class="prod-card bg-white p-3 rounded-xl shadow-sm" data-cat="snack" data-dist="Mayora" onclick="openOrder('Roma Kelapa 300g','Mayora','Rp 8.500/pack','Min. 1 karton (20 pack)')">
+      <div class="aspect-square rounded-xl bg-surface-container mb-2 overflow-hidden">
+        <img src="https://lh3.googleusercontent.com/aida/AP1WRLvB-jJbEIoKgdltQWUDr5HFzu2GCvrqiyBo66ZNz2m6UfZKxHCA6SwL3dCm9d6iOQTwE5vgGaXngctKFGmu273xXh5LU3ncWCqqJbk3Fa94IgtWKzjCTPZhyq1oBgQGytIlmBCLAtiDzTsEsUt_oV31U8RiR_M9cpBBYdfyzh2XMXKpAGUydkmj8By0Dc5p9SoeMBxjF65A5eCwP0hZO84EvvNg1anRzrn-L14KzLL1ZTobvW54cbnoFw" class="w-full h-full object-cover" alt="Roma"/>
+      </div>
+      <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Roma Kelapa 300g</p>
+      <p class="font-label-md text-secondary-container font-bold text-[12px]">Rp 8.500<span class="text-outline font-normal">/pack</span></p>
+      <p class="font-label-md text-on-surface-variant text-[10px]">Mayora · Min. 1 karton</p>
+      <button class="w-full mt-2 bg-secondary-container text-on-secondary h-9 rounded-lg font-label-md font-bold text-[12px] active:scale-95 transition-transform">+ Pesan</button>
+    </div>
+    <!-- Kopi -->
+    <div class="prod-card bg-white p-3 rounded-xl shadow-sm" data-cat="minuman" data-dist="Garudafood" onclick="openOrder('Kopi Kapal Api 165g','Kapal Api Group','Rp 10.200/pack','Min. 1 karton (10 pack)')">
+      <div class="aspect-square rounded-xl bg-surface-container mb-2 overflow-hidden">
+        <img src="https://lh3.googleusercontent.com/aida/AP1WRLtAeWcKaCuKJejDbOaAujQUK2PXBq90J7o0vNSUYNIEItqdZLOSMQ--zr5FH-sa2VoEOPOIQvMQ1UQLK4FXfvL2NmzkicRHb_ZrCdlIwP3vUt58h0Bt6oGpGLbnqO3LvXJuCulUu72KO_vKH7LLuoBJ9zRbY5F5YeWA23dglkUMXSqMHP5AKNo_DtcYn-lzT_vYk0uxW2NZJstOvnXH98n4VLJnsyGgtQimEvhyJq1XQXPuEv2JHjfzNg" class="w-full h-full object-cover" alt="Kopi"/>
+      </div>
+      <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Kopi Kapal Api 165g</p>
+      <p class="font-label-md text-secondary-container font-bold text-[12px]">Rp 10.200<span class="text-outline font-normal">/pack</span></p>
+      <p class="font-label-md text-on-surface-variant text-[10px]">Kapal Api · Min. 1 karton</p>
+      <button class="w-full mt-2 bg-secondary-container text-on-secondary h-9 rounded-lg font-label-md font-bold text-[12px] active:scale-95 transition-transform">+ Pesan</button>
+    </div>
+  </div>
+
+  <!-- Riwayat Pesanan -->
+  <h2 class="font-title-md text-primary text-[16px] mb-3">Riwayat Pesanan</h2>
+  <div class="space-y-3 mb-6">
+    <div class="bg-white border border-outline-variant p-4 rounded-xl flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-tertiary-fixed flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-on-tertiary-fixed-variant text-[18px]" style="font-variation-settings:'FILL' 1">local_shipping</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-body-sm font-semibold">Indomie Goreng × 2 karton</p>
+        <p class="font-label-md text-on-surface-variant text-[10px]">Indofood · Dipesan 8 Jun 2026</p>
+      </div>
+      <span class="bg-tertiary-fixed text-on-tertiary-fixed text-[9px] px-2 py-1 rounded-full font-bold flex-shrink-0">Dikirim</span>
+    </div>
+    <div class="bg-white border border-outline-variant p-4 rounded-xl flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings:'FILL' 1">inventory_2</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-body-sm font-semibold">Gula Pasir 20kg</p>
+        <p class="font-label-md text-on-surface-variant text-[10px]">PT Gulaku · Selesai 5 Jun 2026</p>
+      </div>
+      <span class="bg-surface-container-high text-on-surface-variant text-[9px] px-2 py-1 rounded-full font-bold flex-shrink-0">Selesai</span>
+    </div>
+  </div>
+
+</main>
+
+<!-- Order Sheet -->
+<div id="order-sheet">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="document.getElementById('order-sheet').classList.remove('show')"></div>
+  <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 pb-10 z-10">
+    <div class="w-10 h-1.5 bg-outline-variant rounded-full mx-auto mb-5"></div>
+    <h3 class="font-title-md text-primary font-bold mb-1" id="os-name">Produk</h3>
+    <p class="font-label-md text-on-surface-variant text-[11px] mb-5" id="os-dist">Distributor</p>
+    <div class="space-y-3 mb-5">
+      <div class="flex justify-between py-3 border-b border-outline-variant">
+        <span class="font-body-sm text-on-surface-variant">Harga Distributor</span>
+        <span id="os-price" class="font-body-sm font-bold text-secondary-container">-</span>
+      </div>
+      <div class="flex justify-between py-3 border-b border-outline-variant">
+        <span class="font-body-sm text-on-surface-variant">Min. Pembelian</span>
+        <span id="os-min" class="font-body-sm font-bold">-</span>
+      </div>
+      <div class="flex justify-between py-3">
+        <span class="font-body-sm text-on-surface-variant">Estimasi Tiba</span>
+        <span class="font-body-sm font-bold text-on-tertiary-container">1–2 hari kerja</span>
+      </div>
+    </div>
+    <div class="bg-surface-container-low p-3 rounded-xl mb-5 flex items-start gap-2">
+      <span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings:'FILL' 1">info</span>
+      <p class="font-label-md text-on-surface-variant text-[11px]">Pembayaran via saldo KemasToko. Stok otomatis terupdate setelah konfirmasi penerimaan.</p>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <button onclick="document.getElementById('order-sheet').classList.remove('show')" class="py-3 rounded-xl bg-surface-container-high text-primary font-bold font-body-sm active:scale-95">Batal</button>
+      <button onclick="confirmOrder()" class="py-3 rounded-xl bg-secondary-container text-on-secondary font-bold font-body-sm active:scale-95">✓ Pesan Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order Confirm -->
+<div id="order-confirm">
+  <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+  <div class="absolute top-1/2 left-4 right-4 -translate-y-1/2 bg-white rounded-3xl p-6 z-10 text-center shadow-2xl">
+    <div class="w-16 h-16 bg-tertiary-fixed rounded-full flex items-center justify-center mx-auto mb-3">
+      <span class="material-symbols-outlined text-on-tertiary-fixed-variant text-[32px]" style="font-variation-settings:'FILL' 1">check_circle</span>
+    </div>
+    <h2 class="font-headline-lg-mobile text-primary font-extrabold">Pesanan Dibuat!</h2>
+    <p class="font-body-sm text-on-surface-variant mt-1 mb-5">Pesanan akan diproses oleh distributor. Estimasi tiba 1–2 hari kerja.</p>
+    <button onclick="document.getElementById('order-confirm').classList.remove('show')" class="w-full bg-primary text-on-primary py-3 rounded-xl font-bold active:scale-95">Kembali ke Market</button>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 w-full z-50 shadow-lg bg-surface border-t border-outline-variant flex justify-around items-center h-16 px-2">
+  <a href="KEMASKU.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90">
+    <span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-md text-[10px]">Home</span>
+  </a>
+  <a href="KEMASKASIR.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90">
+    <span class="material-symbols-outlined text-[20px]">point_of_sale</span><span class="font-label-md text-[10px]">Cashier</span>
+  </a>
+  <a href="STOKTOKO.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90">
+    <span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-label-md text-[10px]">Stock</span>
+  </a>
+  <a href="KEMASMARKET.html" class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary rounded-xl px-4 py-1 active:scale-90 shadow-sm">
+    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1">storefront</span><span class="font-label-md text-[10px] font-bold">Market</span>
+  </a>
+  <a href="KEMASUANG.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90">
+    <span class="material-symbols-outlined text-[20px]">payments</span><span class="font-label-md text-[10px]">Finance</span>
+  </a>
+</nav>
+
+<script>
+function setCat(el,cat){
+  document.querySelectorAll('#product-grid > div').forEach(d=>{d.style.display=cat==='semua'||d.dataset.cat===cat?'block':'none'});
+  document.querySelectorAll('.cat-chip').forEach(b=>{b.classList.remove('cat-active','text-white');b.classList.add('bg-surface-container-high','text-on-surface-variant')});
+  el.classList.add('cat-active');el.classList.remove('bg-surface-container-high','text-on-surface-variant');
+}
+function filterDist(dist){
+  document.querySelectorAll('#product-grid > div').forEach(d=>{d.style.display=d.dataset.dist===dist?'block':'none'});
+}
+function openOrder(name,dist,price,min){
+  document.getElementById('os-name').textContent=name;
+  document.getElementById('os-dist').textContent='Distributor: '+dist;
+  document.getElementById('os-price').textContent=price;
+  document.getElementById('os-min').textContent=min;
+  document.getElementById('order-sheet').classList.add('show');
+}
+function confirmOrder(){
+  document.getElementById('order-sheet').classList.remove('show');
+  document.getElementById('order-confirm').classList.add('show');
+}
+</script>
+</body>
+</html>

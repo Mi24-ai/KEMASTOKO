@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KemasToko - Keuangan & Pajak</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script id="tailwind-config">
+tailwind.config={darkMode:"class",theme:{extend:{colors:{"secondary-container":"#fc7728","on-surface-variant":"#43474f","on-secondary":"#ffffff","on-surface":"#0b1c30","surface-container-high":"#dce9ff","background":"#f8f9ff","error-container":"#ffdad6","secondary":"#a04100","primary-fixed-dim":"#a7c8ff","on-primary":"#ffffff","secondary-fixed":"#ffdbcb","surface-container-lowest":"#ffffff","outline":"#737780","surface-variant":"#d3e4fe","on-tertiary-fixed":"#00210d","outline-variant":"#c3c6d1","on-tertiary-fixed-variant":"#005228","tertiary-fixed":"#77fca3","on-tertiary-container":"#1db262","on-background":"#0b1c30","on-secondary-fixed":"#341000","on-secondary-container":"#5d2300","tertiary-container":"#003c1c","on-error-container":"#93000a","surface-dim":"#cbdbf5","inverse-primary":"#a7c8ff","surface-container":"#e5eeff","tertiary":"#00240e","tertiary-fixed-dim":"#59df89","primary":"#001e40","inverse-on-surface":"#eaf1ff","error":"#ba1a1a","primary-fixed":"#d5e3ff","surface-tint":"#3a5f94","surface-container-highest":"#d3e4fe","on-secondary-fixed-variant":"#7a3000","surface":"#f8f9ff","secondary-fixed-dim":"#ffb693","surface-container-low":"#eff4ff","surface-bright":"#f8f9ff","on-error":"#ffffff","on-primary-container":"#799dd6","on-primary-fixed":"#001b3c","primary-container":"#003366","on-primary-fixed-variant":"#1f477b"}}}}
+</script>
+<style>
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transparent;min-height:max(884px,100dvh);font-family:'Inter',sans-serif}
+.bento-card{background:#fff;border:1px solid #e5eeff;box-shadow:0 2px 8px -2px rgba(0,30,64,.07);transition:all .2s cubic-bezier(.34,1.56,.64,1)}
+.bento-card:active{transform:scale(.97)}
+.bar-col{flex:1;border-radius:4px 4px 0 0;background:#e5eeff;cursor:pointer;transition:height .5s ease}
+.bar-col:hover,.bar-col.active{background:#fc7728}
+#pajak-modal{display:none;position:fixed;inset:0;z-index:400}
+#pajak-modal.show{display:flex}
+#invoice-modal{display:none;position:fixed;inset:0;z-index:400}
+#invoice-modal.show{display:flex}
+#detail-modal{display:none;position:fixed;inset:0;z-index:300}
+#detail-modal.show{display:flex}
+#pinjaman-sheet{display:none;position:fixed;inset:0;z-index:200}
+#pinjaman-sheet.show{display:flex}
+#asuransi-sheet{display:none;position:fixed;inset:0;z-index:200}
+#asuransi-sheet.show{display:flex}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.slide-up{animation:slideUp .3s cubic-bezier(.4,0,.2,1)}
+.period-active{background:#001e40;color:white}
+.tab-active{border-bottom:3px solid #fc7728;color:#001e40;font-weight:700}
+.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.step-done{background:#77fca3;color:#00210d}
+.step-active{background:#001e40;color:white}
+.step-idle{background:#e5eeff;color:#737780}
+.step-line{flex:1;height:2px;background:#e5eeff;margin:0 4px}
+.step-line.done{background:#77fca3}
+@keyframes ring-fill{from{stroke-dashoffset:214}to{stroke-dashoffset:var(--target)}}
+.ring-animate{animation:ring-fill 1.2s cubic-bezier(.4,0,.2,1) forwards}
+.pulse-green{animation:pulse-g 2s infinite}
+@keyframes pulse-g{0%,100%{box-shadow:0 0 0 0 rgba(119,252,163,.4)}50%{box-shadow:0 0 0 8px rgba(119,252,163,0)}}
+.premium-glow{box-shadow:0 0 24px rgba(252,119,40,.3)}
+.form-input{width:100%;padding:10px 12px;border:1px solid #c3c6d1;border-radius:12px;font-family:'Inter',sans-serif;font-size:14px;color:#0b1c30;background:#fff;outline:none}
+.form-input:focus{border-color:#fc7728;box-shadow:0 0 0 3px rgba(252,119,40,.12)}
+select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23737780' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:32px}
+.coretax-badge{background:linear-gradient(135deg,#0043A4,#0066CC);color:white;font-size:9px;font-family:'JetBrains Mono',monospace;font-weight:700;padding:2px 7px;border-radius:20px}
+</style>
+</head>
+<body class="pb-24">
+
+<!-- TopBar -->
+<header class="fixed top-0 w-full z-50 shadow-sm bg-surface flex justify-between items-center px-4 h-14">
+  <div class="flex items-center gap-3">
+    <a href="KEMASKU.html" class="material-symbols-outlined text-primary p-1">arrow_back</a>
+    <h1 style="font-family:'Manrope';font-size:18px;font-weight:700;color:#001e40">Keuangan</h1>
+  </div>
+  <div class="flex gap-1">
+    <button onclick="exportExcel('all')" class="flex items-center gap-1 bg-tertiary-fixed text-on-tertiary-fixed-variant px-3 py-1.5 rounded-xl" style="font-family:'JetBrains Mono';font-size:11px;font-weight:700">
+      <span class="material-symbols-outlined" style="font-size:16px">download</span> Export
+    </button>
+    <button class="material-symbols-outlined text-primary p-2">notifications</button>
+  </div>
+</header>
+
+<main class="pt-16 px-4 space-y-4 max-w-2xl mx-auto">
+
+  <!-- Period Toggle -->
+  <div class="flex gap-2 mt-3 overflow-x-auto pb-1">
+    <button onclick="setPeriod(this)" class="period-active px-4 py-2 rounded-full" style="font-family:'JetBrains Mono';font-size:12px;white-space:nowrap;flex-shrink:0">Harian</button>
+    <button onclick="setPeriod(this)" class="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full" style="font-family:'JetBrains Mono';font-size:12px;white-space:nowrap;flex-shrink:0">Mingguan</button>
+    <button onclick="setPeriod(this)" class="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full" style="font-family:'JetBrains Mono';font-size:12px;white-space:nowrap;flex-shrink:0">Bulanan</button>
+    <button onclick="setPeriod(this)" class="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full" style="font-family:'JetBrains Mono';font-size:12px;white-space:nowrap;flex-shrink:0">Tahunan</button>
+  </div>
+
+  <!-- AI Insight -->
+  <div class="bg-surface-container-high p-4 rounded-2xl border border-primary-container/20">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="material-symbols-outlined text-primary" style="font-size:20px;font-variation-settings:'FILL' 1">analytics</span>
+      <h3 style="font-family:'Manrope';font-size:15px;font-weight:700;color:#001e40">Analisis Akuntan Pintar</h3>
+      <span class="ml-auto pulse-green" style="background:#77fca3;color:#00210d;font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px">● Real-time</span>
+    </div>
+    <p style="font-family:'Inter';font-size:13px;color:#43474f;line-height:1.6">Kesehatan bisnis Anda <span style="color:#1db262;font-weight:700">sangat baik</span> dengan pertumbuhan saldo <span style="color:#1db262;font-weight:700">+12.5%</span>. Rasio pengeluaran sehat di <b>68%</b>. Optimalkan stok agar arus kas tetap lancar.</p>
+    <div class="flex justify-between items-center mt-3 pt-3 border-t border-outline-variant/30">
+      <span style="font-family:'JetBrains Mono';font-size:11px;color:#43474f">Margin: <b style="color:#1db262">32%</b> · Laba: <b style="color:#1db262">Rp 3,8 Jt</b></span>
+      <button style="font-family:'JetBrains Mono';font-size:11px;font-weight:700;color:#fc7728">Konsultasi →</button>
+    </div>
+  </div>
+
+  <!-- Balance Card -->
+  <div class="bento-card p-5 rounded-2xl" onclick="openDetail('saldo')">
+    <p style="font-size:12px;color:#43474f">Total Saldo Toko</p>
+    <div class="flex items-baseline gap-1 mt-1 mb-1">
+      <span style="font-size:14px;font-weight:700;color:#43474f">Rp</span>
+      <h3 style="font-family:'Manrope';font-size:36px;font-weight:800;color:#001e40;letter-spacing:-1px">42.850.000</h3>
+    </div>
+    <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f;margin-bottom:12px">Diperbarui 10 Jun 2026, 14:22 WIB</p>
+    <div class="flex items-end gap-0.5 mb-1" style="height:52px">
+      <div class="bar-col" style="height:40%"></div>
+      <div class="bar-col" style="height:60%"></div>
+      <div class="bar-col" style="height:35%"></div>
+      <div class="bar-col" style="height:80%"></div>
+      <div class="bar-col" style="height:55%"></div>
+      <div class="bar-col" style="height:90%"></div>
+      <div class="bar-col active" style="height:100%"></div>
+    </div>
+    <div class="flex justify-between" style="font-family:'JetBrains Mono';font-size:10px;color:#737780;margin-bottom:12px">
+      <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
+    </div>
+    <div class="flex justify-between items-center pt-3 border-t border-outline-variant">
+      <div class="flex items-center gap-1" style="color:#1db262">
+        <span class="material-symbols-outlined" style="font-size:16px">trending_up</span>
+        <span style="font-family:'JetBrains Mono';font-size:11px">+12.5% bulan ini</span>
+      </div>
+      <button class="flex items-center gap-1" style="font-family:'JetBrains Mono';font-size:11px;font-weight:700;color:#001e40">
+        Detail <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Income / Expense -->
+  <div class="grid grid-cols-2 gap-3">
+    <div class="bento-card p-4 rounded-xl" onclick="openDetail('pemasukan')">
+      <span class="material-symbols-outlined" style="color:#1db262;font-size:22px;font-variation-settings:'FILL' 1;margin-bottom:8px;display:block">payments</span>
+      <p style="font-size:12px;color:#43474f">Pemasukan</p>
+      <p style="font-family:'Manrope';font-size:20px;font-weight:800;color:#1db262;margin-top:4px">Rp 12,2 Jt</p>
+      <p style="font-family:'JetBrains Mono';font-size:10px;color:#1db262;margin-top:2px">↑ +8% vs minggu lalu</p>
+    </div>
+    <div class="bento-card p-4 rounded-xl" onclick="openDetail('pengeluaran')">
+      <span class="material-symbols-outlined" style="color:#ba1a1a;font-size:22px;font-variation-settings:'FILL' 1;margin-bottom:8px;display:block">shopping_cart_checkout</span>
+      <p style="font-size:12px;color:#43474f">Pengeluaran</p>
+      <p style="font-family:'Manrope';font-size:20px;font-weight:800;color:#ba1a1a;margin-top:4px">Rp 8,4 Jt</p>
+      <p style="font-family:'JetBrains Mono';font-size:10px;color:#ba1a1a;margin-top:2px">↓ -3% vs minggu lalu</p>
+    </div>
+  </div>
+
+  <!-- 3 Metrics -->
+  <div class="grid grid-cols-3 gap-2">
+    <div class="bento-card p-3 rounded-xl text-center">
+      <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f;margin-bottom:4px">Transaksi</p>
+      <p style="font-family:'Manrope';font-size:22px;font-weight:800;color:#001e40">47</p>
+      <p style="font-family:'JetBrains Mono';font-size:9px;color:#1db262">hari ini</p>
+    </div>
+    <div class="bento-card p-3 rounded-xl text-center">
+      <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f;margin-bottom:4px">Avg Order</p>
+      <p style="font-family:'Manrope';font-size:18px;font-weight:800;color:#001e40">90rb</p>
+      <p style="font-family:'JetBrains Mono';font-size:9px;color:#1db262">+5%</p>
+    </div>
+    <div class="bento-card p-3 rounded-xl text-center">
+      <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f;margin-bottom:4px">Margin</p>
+      <p style="font-family:'Manrope';font-size:22px;font-weight:800;color:#001e40">32%</p>
+      <p style="font-family:'JetBrains Mono';font-size:9px;color:#1db262">sehat ✓</p>
+    </div>
+  </div>
+
+  <!-- Laporan -->
+  <button onclick="openDetail('lengkap')" class="w-full flex items-center justify-between bento-card p-4 rounded-xl">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-xl bg-primary-container flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-on-primary-container" style="font-size:22px;font-variation-settings:'FILL' 1">account_balance_wallet</span>
+      </div>
+      <div class="text-left">
+        <p style="font-family:'Manrope';font-weight:700;font-size:15px">Laporan Keuangan Lengkap</p>
+        <p style="font-size:12px;color:#43474f">Neraca · Laba Rugi · Arus Kas → <b style="color:#1db262">Excel</b></p>
+      </div>
+    </div>
+    <span class="material-symbols-outlined text-outline">chevron_right</span>
+  </button>
+
+  <!-- Invoice -->
+  <button onclick="document.getElementById('invoice-modal').classList.add('show')" class="w-full flex items-center justify-between bento-card p-4 rounded-xl">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-xl bg-secondary-fixed flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-secondary" style="font-size:22px;font-variation-settings:'FILL' 1">receipt_long</span>
+      </div>
+      <div class="text-left">
+        <p style="font-family:'Manrope';font-weight:700;font-size:15px">Manajemen Invoice</p>
+        <p style="font-size:12px;color:#43474f">Buat, kirim & lacak invoice ke pelanggan</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span style="background:#ba1a1a;color:white;font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px">3 Unpaid</span>
+      <span class="material-symbols-outlined text-outline">chevron_right</span>
+    </div>
+  </button>
+
+  <!-- ═══ PREMIUM PAJAK CORETAX BANNER ═══ -->
+  <div onclick="openPajakModal()" class="premium-glow cursor-pointer relative rounded-2xl overflow-hidden" style="background:linear-gradient(135deg,#001e40 0%,#003366 55%,#0043A4 100%)">
+    <div class="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-10" style="background:#fc7728"></div>
+    <div class="absolute -bottom-6 -left-6 w-24 h-24 rounded-full opacity-10" style="background:#77fca3"></div>
+    <!-- Coretax Badge -->
+    <div class="absolute top-3 right-3 flex items-center gap-1 rounded-full px-2 py-1" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(4px)">
+      <span class="material-symbols-outlined" style="font-size:12px;color:#77fca3;font-variation-settings:'FILL' 1">verified</span>
+      <span style="font-family:'JetBrains Mono';font-size:9px;color:white;font-weight:700">Coretax DJP</span>
+    </div>
+    <div class="relative z-10 p-5">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(252,119,40,.25)">
+          <span class="material-symbols-outlined" style="font-size:26px;color:#fc7728;font-variation-settings:'FILL' 1">workspace_premium</span>
+        </div>
+        <div>
+          <h3 style="font-family:'Manrope';font-size:15px;font-weight:800;color:white">Premium · Modul Pajak Terintegrasi</h3>
+          <p style="font-family:'JetBrains Mono';font-size:10px;color:#a7c8ff">WP Badan · Coretax · PPN & PPh 21/23</p>
+        </div>
+      </div>
+      <!-- 5 Fitur Pills sesuai brief -->
+      <div class="flex flex-wrap gap-1.5 mb-4">
+        <span class="flex items-center gap-1 px-2 py-1 rounded-full" style="background:rgba(255,255,255,0.12);font-family:'JetBrains Mono';font-size:10px;color:white">
+          <span class="material-symbols-outlined" style="font-size:12px;color:#77fca3;font-variation-settings:'FILL' 1">check_circle</span> Ekspor Data Coretax
+        </span>
+        <span class="flex items-center gap-1 px-2 py-1 rounded-full" style="background:rgba(255,255,255,0.12);font-family:'JetBrains Mono';font-size:10px;color:white">
+          <span class="material-symbols-outlined" style="font-size:12px;color:#77fca3;font-variation-settings:'FILL' 1">check_circle</span> Kemitraan Konsultan
+        </span>
+        <span class="flex items-center gap-1 px-2 py-1 rounded-full" style="background:rgba(255,255,255,0.12);font-family:'JetBrains Mono';font-size:10px;color:white">
+          <span class="material-symbols-outlined" style="font-size:12px;color:#77fca3;font-variation-settings:'FILL' 1">check_circle</span> Kalkulator PPN & PPh
+        </span>
+        <span class="flex items-center gap-1 px-2 py-1 rounded-full" style="background:rgba(255,255,255,0.12);font-family:'JetBrains Mono';font-size:10px;color:white">
+          <span class="material-symbols-outlined" style="font-size:12px;color:#77fca3;font-variation-settings:'FILL' 1">check_circle</span> Legal & Compliance Audit
+        </span>
+        <span class="flex items-center gap-1 px-2 py-1 rounded-full" style="background:rgba(255,255,255,0.12);font-family:'JetBrains Mono';font-size:10px;color:white">
+          <span class="material-symbols-outlined" style="font-size:12px;color:#77fca3;font-variation-settings:'FILL' 1">check_circle</span> Dashboard Laporan Pajak
+        </span>
+      </div>
+      <div class="flex items-center justify-between">
+        <div>
+          <span style="font-family:'JetBrains Mono';font-size:10px;color:#a7c8ff;text-decoration:line-through">Rp 299.000/bln</span>
+          <div class="flex items-baseline gap-1">
+            <span style="font-family:'Manrope';font-size:26px;font-weight:800;color:white">Rp 150.000</span>
+            <span style="font-family:'JetBrains Mono';font-size:10px;color:#a7c8ff">/bulan</span>
+          </div>
+        </div>
+        <button class="flex items-center gap-2 px-4 py-2.5 rounded-xl active:scale-95" style="background:#fc7728;color:white;font-family:'Manrope';font-size:13px;font-weight:700">
+          <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1">play_circle</span>
+          Coba Demo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Layanan Keuangan -->
+  <h2 style="font-family:'Manrope';font-size:16px;font-weight:700;color:#001e40">Layanan Keuangan UMKM</h2>
+  <div class="space-y-3">
+    <div class="bento-card flex items-center gap-4 p-4 rounded-xl cursor-pointer" onclick="document.getElementById('pinjaman-sheet').classList.add('show')">
+      <div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-primary" style="font-size:22px;font-variation-settings:'FILL' 1">account_balance</span>
+      </div>
+      <div class="flex-1">
+        <p style="font-family:'Manrope';font-weight:700;font-size:15px">Pinjaman Mikro</p>
+        <p style="font-size:12px;color:#43474f">Limit hingga Rp 50 Juta, bunga 0.8%/bln</p>
+      </div>
+      <div class="flex flex-col items-end gap-1">
+        <span style="background:#77fca3;color:#00210d;font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px">Aktif</span>
+        <span class="material-symbols-outlined text-outline">chevron_right</span>
+      </div>
+    </div>
+    <div class="bento-card flex items-center gap-4 p-4 rounded-xl cursor-pointer" onclick="document.getElementById('asuransi-sheet').classList.add('show')">
+      <div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-on-tertiary-fixed-variant" style="font-size:22px;font-variation-settings:'FILL' 1">health_and_safety</span>
+      </div>
+      <div class="flex-1">
+        <p style="font-family:'Manrope';font-weight:700;font-size:15px">Asuransi Mikro</p>
+        <p style="font-size:12px;color:#43474f">Proteksi toko & stok mulai Rp 25.000/bln</p>
+      </div>
+      <span class="material-symbols-outlined text-outline">chevron_right</span>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="bento-card p-4 rounded-xl flex flex-col items-center text-center gap-2 cursor-pointer" onclick="showToast('Fitur Bayar Tagihan aktif!')">
+        <div class="w-11 h-11 rounded-xl bg-secondary-fixed flex items-center justify-center">
+          <span class="material-symbols-outlined text-secondary" style="font-size:20px;font-variation-settings:'FILL' 1">receipt_long</span>
+        </div>
+        <p style="font-family:'JetBrains Mono';font-weight:700;font-size:12px">Bayar Tagihan</p>
+        <span style="font-family:'JetBrains Mono';font-size:9px;color:#43474f">PLN · BPJS · Telkom</span>
+      </div>
+      <div class="bento-card p-4 rounded-xl flex flex-col items-center text-center gap-2 cursor-pointer" onclick="showToast('QRIS Statis siap!')">
+        <div class="w-11 h-11 rounded-xl bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary" style="font-size:20px">qr_code_2</span>
+        </div>
+        <p style="font-family:'JetBrains Mono';font-weight:700;font-size:12px">QRIS Statis</p>
+        <span style="font-family:'JetBrains Mono';font-size:9px;color:#43474f">Semua e-wallet</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Riwayat Transaksi -->
+  <div class="flex justify-between items-center">
+    <h2 style="font-family:'Manrope';font-size:16px;font-weight:700;color:#001e40">Riwayat Transaksi</h2>
+    <button onclick="exportExcel('transactions')" class="flex items-center gap-1 text-primary bg-surface-container-high px-3 py-1.5 rounded-xl border border-outline-variant active:scale-95" style="font-family:'JetBrains Mono';font-size:11px;font-weight:700">
+      <span class="material-symbols-outlined" style="font-size:14px">table_view</span> Excel
+    </button>
+  </div>
+  <div class="space-y-2 mb-6">
+    <div class="bg-white border border-outline-variant p-3 rounded-xl flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-tertiary-fixed flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-on-tertiary-fixed-variant" style="font-size:16px;font-variation-settings:'FILL' 1">add_circle</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p style="font-size:13px;font-weight:600">Penjualan #TRX-0047</p>
+        <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">14:22 WIB · Tunai</p>
+      </div>
+      <span style="font-family:'JetBrains Mono';font-weight:700;color:#1db262;font-size:12px">+Rp 16.300</span>
+    </div>
+    <div class="bg-white border border-outline-variant p-3 rounded-xl flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-tertiary-fixed flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-on-tertiary-fixed-variant" style="font-size:16px;font-variation-settings:'FILL' 1">add_circle</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p style="font-size:13px;font-weight:600">Penjualan #TRX-0046</p>
+        <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">13:55 WIB · QRIS</p>
+      </div>
+      <span style="font-family:'JetBrains Mono';font-weight:700;color:#1db262;font-size:12px">+Rp 28.500</span>
+    </div>
+    <div class="bg-white border border-outline-variant p-3 rounded-xl flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-error-container flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-error" style="font-size:16px;font-variation-settings:'FILL' 1">remove_circle</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p style="font-size:13px;font-weight:600">Beli Stok Distributor</p>
+        <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">11:00 WIB · Transfer</p>
+      </div>
+      <span style="font-family:'JetBrains Mono';font-weight:700;color:#ba1a1a;font-size:12px">-Rp 224.000</span>
+    </div>
+    <button onclick="openDetail('transactions')" class="w-full py-3 rounded-xl bg-surface-container-high text-primary active:scale-95" style="font-family:'JetBrains Mono';font-size:12px;font-weight:700">
+      Lihat Semua Transaksi →
+    </button>
+  </div>
+</main>
+
+<!-- ═══════ PAJAK MODAL CORETAX ═══════ -->
+<div id="pajak-modal" class="flex-col bg-black/60 backdrop-blur-sm">
+  <div class="mt-auto bg-surface rounded-t-3xl w-full max-h-[93vh] overflow-y-auto slide-up">
+
+    <!-- Header Sticky -->
+    <div class="sticky top-0 bg-surface rounded-t-3xl z-10 border-b border-outline-variant">
+      <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-outline-variant rounded-full"></div></div>
+      <div class="flex items-center justify-between px-5 pb-3">
+        <div>
+          <div class="flex items-center gap-2 mb-0.5">
+            <h2 style="font-family:'Manrope';font-size:17px;font-weight:700;color:#001e40">Modul Pajak Premium</h2>
+            <span class="coretax-badge">Coretax</span>
+          </div>
+          <p style="font-family:'JetBrains Mono';font-size:11px;color:#43474f">WP Badan · Demo Interaktif · KemasToko 2026</p>
+        </div>
+        <button onclick="document.getElementById('pajak-modal').classList.remove('show')" class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center active:scale-90">
+          <span class="material-symbols-outlined" style="font-size:20px">close</span>
+        </button>
+      </div>
+      <!-- Tabs -->
+      <div class="flex px-5 border-b border-outline-variant overflow-x-auto">
+        <button onclick="switchTab('overview')" id="tab-overview" class="tab-active flex-shrink-0 px-3 py-3" style="font-family:'JetBrains Mono';font-size:11px">Overview</button>
+        <button onclick="switchTab('kalkulator')" id="tab-kalkulator" class="flex-shrink-0 px-3 py-3 text-on-surface-variant" style="font-family:'JetBrains Mono';font-size:11px">Kalkulator</button>
+        <button onclick="switchTab('ekspor')" id="tab-ekspor" class="flex-shrink-0 px-3 py-3 text-on-surface-variant" style="font-family:'JetBrains Mono';font-size:11px">Ekspor Coretax</button>
+        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="flex-shrink-0 px-3 py-3 text-on-surface-variant" style="font-family:'JetBrains Mono';font-size:11px">Dashboard</button>
+        <button onclick="switchTab('konsultan')" id="tab-konsultan" class="flex-shrink-0 px-3 py-3 text-on-surface-variant" style="font-family:'JetBrains Mono';font-size:11px">Konsultan</button>
+      </div>
+    </div>
+
+    <!-- TAB: OVERVIEW -->
+    <div id="pt-overview" class="px-5 py-4 space-y-4">
+      <!-- Status Ring WP Badan -->
+      <div class="rounded-2xl p-5 relative overflow-hidden" style="background:linear-gradient(135deg,#001e40,#003366)">
+        <div class="absolute -bottom-6 -right-6 w-32 h-32 rounded-full blur-2xl opacity-20" style="background:#fc7728"></div>
+        <div class="flex items-center gap-4 relative z-10">
+          <div class="relative flex-shrink-0">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="7"/>
+              <circle id="pajak-ring" cx="40" cy="40" r="34" fill="none" stroke="#77fca3" stroke-width="7"
+                stroke-linecap="round" stroke-dasharray="214" stroke-dashoffset="214"
+                transform="rotate(-90 40 40)" style="--target:54" class="ring-animate"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center flex-col">
+              <span style="font-family:'Manrope';font-size:18px;font-weight:800;color:white">75%</span>
+              <span style="font-family:'JetBrains Mono';font-size:8px;color:#a7c8ff">Selesai</span>
+            </div>
+          </div>
+          <div>
+            <p style="font-family:'JetBrains Mono';font-size:10px;color:#a7c8ff;text-transform:uppercase;letter-spacing:.06em">WP Badan · 2026</p>
+            <h4 style="font-family:'Manrope';font-size:16px;font-weight:700;color:white;margin-top:4px">Dalam Proses</h4>
+            <p style="font-size:12px;color:#a7c8ff;margin-top:4px">Jatuh tempo: <span style="color:#77fca3;font-weight:700">30 April 2027</span></p>
+            <div class="flex gap-2 mt-2">
+              <span style="background:#77fca3;color:#00210d;font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px">PPN ✓</span>
+              <span style="background:rgba(255,255,255,0.15);color:white;font-family:'JetBrains Mono';font-size:9px;padding:2px 7px;border-radius:20px">PPh menunggu</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 Modul Cards sesuai brief -->
+      <h3 style="font-family:'Manrope';font-size:14px;font-weight:700;color:#001e40">5 Modul Pajak Premium</h3>
+      <div class="space-y-2">
+        <!-- Modul 1: Ekspor Coretax -->
+        <div class="bento-card p-4 rounded-xl flex items-center gap-3" onclick="switchTab('ekspor')">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#0043A4,#0066CC)">
+            <span class="material-symbols-outlined" style="color:white;font-size:22px;font-variation-settings:'FILL' 1">cloud_sync</span>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <p style="font-family:'Manrope';font-weight:700;font-size:14px">Ekspor Data Perpajakan Coretax</p>
+              <span class="coretax-badge">DJP</span>
+            </div>
+            <p style="font-size:12px;color:#43474f;margin-top:2px">Generate file CSV/XML siap upload ke sistem Coretax DJP</p>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <span style="background:#77fca3;color:#00210d;font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px">Tersedia</span>
+            <span class="material-symbols-outlined text-outline" style="font-size:18px">chevron_right</span>
+          </div>
+        </div>
+        <!-- Modul 2: Konsultan Retainer -->
+        <div class="bento-card p-4 rounded-xl flex items-center gap-3" onclick="switchTab('konsultan')">
+          <div class="w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-secondary" style="font-size:22px;font-variation-settings:'FILL' 1">support_agent</span>
+          </div>
+          <div class="flex-1">
+            <p style="font-family:'Manrope';font-weight:700;font-size:14px">Kemitraan Konsultan Pajak (Retainer)</p>
+            <p style="font-size:12px;color:#43474f;margin-top:2px">Akses konsultan pajak bersertifikat, chat & konsultasi</p>
+          </div>
+          <span class="material-symbols-outlined text-outline" style="font-size:18px">chevron_right</span>
+        </div>
+        <!-- Modul 3: Kalkulator -->
+        <div class="bento-card p-4 rounded-xl flex items-center gap-3" onclick="switchTab('kalkulator')">
+          <div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-on-primary-container" style="font-size:22px;font-variation-settings:'FILL' 1">calculate</span>
+          </div>
+          <div class="flex-1">
+            <p style="font-family:'Manrope';font-weight:700;font-size:14px">Modul Kalkulasi Pajak</p>
+            <p style="font-size:12px;color:#43474f;margin-top:2px">Hitung PPN 11%, PPh 21 karyawan, PPh 23 jasa</p>
+          </div>
+          <span class="material-symbols-outlined text-outline" style="font-size:18px">chevron_right</span>
+        </div>
+        <!-- Modul 4: Legal Compliance -->
+        <div class="bento-card p-4 rounded-xl flex items-center gap-3" onclick="showToast('Modul Legal Compliance aktif!')">
+          <div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary" style="font-size:22px;font-variation-settings:'FILL' 1">gavel</span>
+          </div>
+          <div class="flex-1">
+            <p style="font-family:'Manrope';font-weight:700;font-size:14px">Legal Review & Compliance Audit</p>
+            <p style="font-size:12px;color:#43474f;margin-top:2px">Review kepatuhan perpajakan, audit mandiri sebelum lapor</p>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <span style="background:#ffdbcb;color:#a04100;font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px">Q3 2026</span>
+            <span class="material-symbols-outlined text-outline" style="font-size:18px">chevron_right</span>
+          </div>
+        </div>
+        <!-- Modul 5: Dashboard -->
+        <div class="bento-card p-4 rounded-xl flex items-center gap-3" onclick="switchTab('dashboard')">
+          <div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-on-tertiary-fixed-variant" style="font-size:22px;font-variation-settings:'FILL' 1">dashboard</span>
+          </div>
+          <div class="flex-1">
+            <p style="font-family:'Manrope';font-weight:700;font-size:14px">Dashboard Laporan Pajak</p>
+            <p style="font-size:12px;color:#43474f;margin-top:2px">Ringkasan kewajiban, histori pelaporan & kalender pajak</p>
+          </div>
+          <span class="material-symbols-outlined text-outline" style="font-size:18px">chevron_right</span>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <button onclick="switchTab('kalkulator')" class="w-full py-3.5 rounded-xl text-white active:scale-95" style="background:linear-gradient(135deg,#001e40,#0043A4);font-family:'Manrope';font-size:14px;font-weight:700">
+        Mulai Hitung Pajak →
+      </button>
+    </div>
+
+    <!-- TAB: KALKULATOR -->
+    <div id="pt-kalkulator" class="px-5 py-4 space-y-4 hidden">
+      <p style="font-size:13px;color:#43474f">Kalkulasi pajak WP Badan berdasarkan data transaksi KemasToko.</p>
+      <div class="space-y-3">
+        <div class="bento-card p-4 rounded-xl">
+          <label style="font-family:'JetBrains Mono';font-size:11px;color:#43474f;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:8px">Total Omzet Bulan Ini</label>
+          <div class="flex items-center gap-2">
+            <span style="font-size:14px;font-weight:700;color:#43474f">Rp</span>
+            <input id="omzet-input" type="number" value="12200000" placeholder="12.200.000"
+              class="flex-1 border-0 outline-none bg-transparent" style="font-family:'Manrope';font-size:22px;font-weight:800;color:#001e40"
+              oninput="hitungPajak()"/>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bento-card p-3 rounded-xl">
+            <label style="font-family:'JetBrains Mono';font-size:11px;color:#43474f;display:block;margin-bottom:6px">Status PKP</label>
+            <select id="pkp-status" class="form-input" style="font-size:13px;font-weight:700;color:#001e40" onchange="hitungPajak()">
+              <option value="non-pkp">Non-PKP</option>
+              <option value="pkp">PKP (PPN 11%)</option>
+            </select>
+          </div>
+          <div class="bento-card p-3 rounded-xl">
+            <label style="font-family:'JetBrains Mono';font-size:11px;color:#43474f;display:block;margin-bottom:6px">Jml Karyawan</label>
+            <div class="flex items-center justify-between">
+              <button onclick="changeKaryawan(-1)" class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center font-bold active:scale-90" style="color:#001e40">−</button>
+              <span id="karyawan-count" style="font-family:'Manrope';font-size:22px;font-weight:800;color:#001e40">3</span>
+              <button onclick="changeKaryawan(1)" class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center font-bold active:scale-90" style="color:#001e40">+</button>
+            </div>
+          </div>
+        </div>
+        <!-- Toggle PPh 23 -->
+        <div class="bento-card p-3 rounded-xl flex items-center justify-between">
+          <div>
+            <p style="font-family:'Manrope';font-weight:700;font-size:13px">Ada Jasa Pihak Ketiga?</p>
+            <p style="font-size:11px;color:#43474f">Kenakan PPh Pasal 23 (2%)</p>
+          </div>
+          <div class="relative flex-shrink-0">
+            <input type="checkbox" id="pph23-toggle" class="sr-only" onchange="hitungPajak()"/>
+            <label for="pph23-toggle" class="flex items-center cursor-pointer">
+              <div id="pph23-track" class="w-12 h-6 bg-outline-variant rounded-full transition-colors relative">
+                <div id="pph23-thumb" class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform"></div>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div id="pph23-input" class="bento-card p-3 rounded-xl hidden">
+          <label style="font-family:'JetBrains Mono';font-size:11px;color:#43474f;display:block;margin-bottom:6px">Nilai Jasa Pihak Ketiga (Rp)</label>
+          <input id="jasa-val" type="number" placeholder="5000000" class="form-input" style="font-size:14px;font-weight:700" oninput="hitungPajak()"/>
+        </div>
+      </div>
+      <!-- Hasil -->
+      <div class="bg-surface-container-high p-4 rounded-2xl border border-primary-container/20">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-primary" style="font-size:18px;font-variation-settings:'FILL' 1">calculate</span>
+          <h4 style="font-family:'Manrope';font-size:14px;font-weight:700;color:#001e40">Estimasi Kewajiban Pajak WP Badan</h4>
+        </div>
+        <div id="pajak-breakdown" class="space-y-2"></div>
+        <div class="mt-3 pt-3 border-t border-outline-variant flex justify-between items-center">
+          <span style="font-weight:700">Total Estimasi</span>
+          <span id="pajak-total" style="font-family:'Manrope';font-size:20px;font-weight:800;color:#001e40">Rp 0</span>
+        </div>
+        <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f;margin-top:8px">*Berdasarkan UU HPP 2021, PP 55/2022, PMK Coretax. Konsultasikan ke konsultan KemasToko.</p>
+      </div>
+      <button onclick="switchTab('ekspor')" class="w-full py-3.5 rounded-xl text-white active:scale-95" style="background:#fc7728;font-family:'Manrope';font-size:14px;font-weight:700">
+        Ekspor ke Coretax →
+      </button>
+    </div>
+
+    <!-- TAB: EKSPOR CORETAX -->
+    <div id="pt-ekspor" class="px-5 py-4 space-y-4 hidden">
+      <div class="rounded-2xl p-4 flex items-center gap-3" style="background:linear-gradient(135deg,#0043A4,#0066CC)">
+        <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined" style="color:white;font-size:24px;font-variation-settings:'FILL' 1">cloud_sync</span>
+        </div>
+        <div>
+          <h4 style="font-family:'Manrope';font-size:15px;font-weight:700;color:white">Ekspor Data ke Coretax DJP</h4>
+          <p style="font-family:'JetBrains Mono';font-size:10px;color:rgba(255,255,255,0.7)">Data transaksi otomatis diformat sesuai skema Coretax</p>
+        </div>
+      </div>
+      <!-- Pilih jenis ekspor -->
+      <div>
+        <h4 style="font-family:'Manrope';font-size:14px;font-weight:700;color:#001e40;margin-bottom:10px">Pilih Jenis Data Ekspor</h4>
+        <div class="space-y-2" id="ekspor-list">
+          <div class="bento-card p-3 rounded-xl flex items-center gap-3 cursor-pointer" onclick="toggleEkspor(this)">
+            <div class="w-5 h-5 rounded-md border-2 border-outline-variant flex items-center justify-center flex-shrink-0 check-box">
+              <span class="material-symbols-outlined text-white hidden check-icon" style="font-size:14px">check</span>
+            </div>
+            <div class="flex-1">
+              <p style="font-weight:600;font-size:13px">Faktur Pajak PPN (e-Faktur)</p>
+              <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">47 faktur · Juni 2026</p>
+            </div>
+            <span style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">CSV</span>
+          </div>
+          <div class="bento-card p-3 rounded-xl flex items-center gap-3 cursor-pointer" onclick="toggleEkspor(this)">
+            <div class="w-5 h-5 rounded-md border-2 border-outline-variant flex items-center justify-center flex-shrink-0 check-box">
+              <span class="material-symbols-outlined text-white hidden check-icon" style="font-size:14px">check</span>
+            </div>
+            <div class="flex-1">
+              <p style="font-weight:600;font-size:13px">Bukti Potong PPh 21 Karyawan</p>
+              <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">3 karyawan · Juni 2026</p>
+            </div>
+            <span style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">XML</span>
+          </div>
+          <div class="bento-card p-3 rounded-xl flex items-center gap-3 cursor-pointer" onclick="toggleEkspor(this)">
+            <div class="w-5 h-5 rounded-md border-2 border-outline-variant flex items-center justify-center flex-shrink-0 check-box">
+              <span class="material-symbols-outlined text-white hidden check-icon" style="font-size:14px">check</span>
+            </div>
+            <div class="flex-1">
+              <p style="font-weight:600;font-size:13px">Bukti Potong PPh 23</p>
+              <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">Jasa pihak ketiga · Juni 2026</p>
+            </div>
+            <span style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">XML</span>
+          </div>
+          <div class="bento-card p-3 rounded-xl flex items-center gap-3 cursor-pointer" onclick="toggleEkspor(this)">
+            <div class="w-5 h-5 rounded-md border-2 border-outline-variant flex items-center justify-center flex-shrink-0 check-box">
+              <span class="material-symbols-outlined text-white hidden check-icon" style="font-size:14px">check</span>
+            </div>
+            <div class="flex-1">
+              <p style="font-weight:600;font-size:13px">SPT Masa PPN 1111</p>
+              <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">Formulir otomatis · Juni 2026</p>
+            </div>
+            <span style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">XML</span>
+          </div>
+        </div>
+      </div>
+      <!-- Preview -->
+      <div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant">
+        <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f;margin-bottom:6px;text-transform:uppercase">Preview Data Coretax</p>
+        <pre style="font-family:'JetBrains Mono';font-size:10px;color:#001e40;white-space:pre-wrap;overflow-x:auto">&lt;FakturPajak&gt;
+  &lt;TanggalFaktur&gt;2026-06-10&lt;/TanggalFaktur&gt;
+  &lt;NPWP&gt;12.345.678.9-001.000&lt;/NPWP&gt;
+  &lt;NamaWP&gt;Toko Pak Budi&lt;/NamaWP&gt;
+  &lt;DPP&gt;11000000&lt;/DPP&gt;
+  &lt;PPN&gt;1210000&lt;/PPN&gt;
+&lt;/FakturPajak&gt;</pre>
+      </div>
+      <button onclick="doEkspor()" class="w-full py-3.5 rounded-xl text-white active:scale-95" style="background:linear-gradient(135deg,#0043A4,#0066CC);font-family:'Manrope';font-size:14px;font-weight:700">
+        <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle">cloud_upload</span> Generate & Ekspor File Coretax
+      </button>
+    </div>
+
+    <!-- TAB: DASHBOARD -->
+    <div id="pt-dashboard" class="px-5 py-4 space-y-4 hidden">
+      <!-- Kalender Pajak -->
+      <div>
+        <h4 style="font-family:'Manrope';font-size:14px;font-weight:700;color:#001e40;margin-bottom:10px">📅 Kalender Kewajiban Pajak</h4>
+        <div class="space-y-2">
+          <div class="bento-card p-3 rounded-xl flex items-center gap-3 border-l-4" style="border-left-color:#77fca3">
+            <div class="w-10 h-10 rounded-xl bg-tertiary-fixed flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-on-tertiary-fixed-variant" style="font-size:18px;font-variation-settings:'FILL' 1">task_alt</span>
+            </div>
+            <div class="flex-1">
+              <p style="font-weight:600;font-size:13px">PPN Masa Juni 2026</p>
+              <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">Lunas 15 Jun · e-Faktur #2026-047</p>
+            </div>
+            <div class="text-right">
+              <p style="font-family:'JetBrains Mono';font-weight:700;color:#1db262;font-size:12px">Rp 1.220.000</p>
+              <span style="background:#77fca3;color:#00210d;font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px">Lunas</span>
+            </div>
+          </div>
+          <div class="bento-card p-3 rounded-xl flex items-center gap-3 border-l-4" style="border-left-color:#fc7728">
+            <div class="w-10 h-10 rounded-xl bg-secondary-fixed flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-secondary" style="font-size:18px;font-variation-settings:'FILL' 1">schedule</span>
+            </div>
+            <div class="flex-1">
+              <p style="font-weight:600;font-size:13px">PPh 21 Masa Juli 2026</p>
+              <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">Jatuh tempo 20 Jul 2026</p>
+            </div>
+            <div class="text-right">
+              <p style="font-family:'JetBrains Mono';font-weight:700;color:#a04100;font-size:12px">Rp 375.000</p>
+              <span style="background:#ffdbcb;color:#a04100;font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px">H-37</span>
+            </div>
+          </div>
+          <div class="bento-card p-3 rounded-xl flex items-center gap-3 border-l-4" style="border-left-color:#e5eeff">
+            <div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-primary" style="font-size:18px">hourglass_empty</span>
+            </div>
+            <div class="flex-1">
+              <p style="font-weight:600;font-size:13px">SPT Tahunan PPh Badan 2026</p>
+              <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">Jatuh tempo 30 Apr 2027</p>
+            </div>
+            <div class="text-right">
+              <p style="font-family:'JetBrains Mono';font-weight:700;color:#001e40;font-size:12px">Est. Rp 4,2 Jt</p>
+              <span style="background:#e5eeff;color:#43474f;font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px">Belum mulai</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Ringkasan Tahunan -->
+      <div>
+        <h4 style="font-family:'Manrope';font-size:14px;font-weight:700;color:#001e40;margin-bottom:10px">📊 Ringkasan Pajak 2026</h4>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="bento-card p-3 rounded-xl text-center">
+            <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f;margin-bottom:4px">Total PPN Dibayar</p>
+            <p style="font-family:'Manrope';font-size:18px;font-weight:800;color:#001e40">Rp 6,1 Jt</p>
+            <p style="font-family:'JetBrains Mono';font-size:9px;color:#1db262">6 masa ✓</p>
+          </div>
+          <div class="bento-card p-3 rounded-xl text-center">
+            <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f;margin-bottom:4px">Total PPh 21</p>
+            <p style="font-family:'Manrope';font-size:18px;font-weight:800;color:#001e40">Rp 2,2 Jt</p>
+            <p style="font-family:'JetBrains Mono';font-size:9px;color:#1db262">6 bulan ✓</p>
+          </div>
+          <div class="bento-card p-3 rounded-xl text-center">
+            <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f;margin-bottom:4px">Laporan Dibuat</p>
+            <p style="font-family:'Manrope';font-size:18px;font-weight:800;color:#001e40">12</p>
+            <p style="font-family:'JetBrains Mono';font-size:9px;color:#43474f">dokumen</p>
+          </div>
+          <div class="bento-card p-3 rounded-xl text-center">
+            <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f;margin-bottom:4px">Compliance Score</p>
+            <p style="font-family:'Manrope';font-size:18px;font-weight:800;color:#1db262">A+</p>
+            <p style="font-family:'JetBrains Mono';font-size:9px;color:#1db262">tepat waktu</p>
+          </div>
+        </div>
+      </div>
+      <button onclick="exportExcel('pajak')" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-tertiary-fixed text-on-tertiary-fixed-variant active:scale-95" style="font-family:'Manrope';font-size:14px;font-weight:700">
+        <span class="material-symbols-outlined" style="font-size:18px">download</span> Export Laporan Pajak Excel
+      </button>
+    </div>
+
+    <!-- TAB: KONSULTAN -->
+    <div id="pt-konsultan" class="px-5 py-4 space-y-4 hidden">
+      <div class="rounded-2xl p-4 flex items-center gap-4" style="background:linear-gradient(135deg,#a04100,#fc7728)">
+        <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined" style="color:white;font-size:28px;font-variation-settings:'FILL' 1">support_agent</span>
+        </div>
+        <div>
+          <h4 style="font-family:'Manrope';font-size:15px;font-weight:700;color:white">Kemitraan Konsultan Pajak</h4>
+          <p style="font-family:'JetBrains Mono';font-size:10px;color:rgba(255,255,255,0.8)">Retainer bulanan · Bersertifikat Brevet A/B</p>
+        </div>
+      </div>
+      <!-- Paket Retainer -->
+      <div>
+        <h4 style="font-family:'Manrope';font-size:14px;font-weight:700;color:#001e40;margin-bottom:10px">Paket Konsultasi</h4>
+        <div class="space-y-2">
+          <div class="bento-card p-4 rounded-xl">
+            <div class="flex justify-between items-start mb-2">
+              <p style="font-family:'Manrope';font-weight:700;font-size:14px">Paket Basic</p>
+              <span style="font-family:'Manrope';font-size:14px;font-weight:700;color:#001e40">Rp 150rb/bln</span>
+            </div>
+            <p style="font-size:12px;color:#43474f;margin-bottom:10px">Chat konsultan (5x/bln) · Review laporan PPN & PPh</p>
+            <button onclick="showToast('Berlangganan Paket Basic!')" class="w-full py-2.5 rounded-xl bg-surface-container-high text-primary active:scale-95" style="font-family:'Manrope';font-size:13px;font-weight:700">Pilih Paket</button>
+          </div>
+          <div class="bento-card p-4 rounded-xl border-2 border-secondary-container relative overflow-hidden">
+            <div class="absolute top-0 right-0 bg-secondary-container text-white" style="font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:4px 10px;border-radius:0 14px 0 10px">TERPOPULER</div>
+            <div class="flex justify-between items-start mb-2">
+              <p style="font-family:'Manrope';font-weight:700;font-size:14px">Paket Premium ⭐</p>
+              <span style="font-family:'Manrope';font-size:14px;font-weight:700;color:#a04100">Rp 350rb/bln</span>
+            </div>
+            <p style="font-size:12px;color:#43474f;margin-bottom:10px">Chat tidak terbatas · Review SPT Tahunan · Compliance Audit · Coretax Guide</p>
+            <button onclick="showToast('Berlangganan Paket Premium! 🎉')" class="w-full py-2.5 rounded-xl text-white active:scale-95" style="background:#fc7728;font-family:'Manrope';font-size:13px;font-weight:700">Pilih Paket</button>
+          </div>
+        </div>
+      </div>
+      <!-- Chat Preview -->
+      <div class="bg-surface-container-low rounded-2xl p-4 border border-outline-variant">
+        <h4 style="font-family:'Manrope';font-size:13px;font-weight:700;color:#001e40;margin-bottom:10px">💬 Chat Konsultan (Demo)</h4>
+        <div class="space-y-3 mb-3">
+          <div class="flex gap-2">
+            <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0 text-white" style="font-family:'Manrope';font-size:11px;font-weight:700">KP</div>
+            <div class="bg-white p-2.5 rounded-xl rounded-tl-none flex-1 border border-outline-variant">
+              <p style="font-size:12px">Halo! Saya Konsultan Pajak Anda. Berdasarkan data Coretax bulan Juni, omzet Anda Rp 12,2 Jt sehingga PPh Final 0,5% = <b>Rp 61.000</b>. Ada yang ingin ditanyakan?</p>
+              <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f;margin-top:4px">09:15</p>
+            </div>
+          </div>
+          <div class="flex gap-2 flex-row-reverse">
+            <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0" style="font-family:'Manrope';font-size:11px;font-weight:700;color:#001e40">PB</div>
+            <div class="bg-primary p-2.5 rounded-xl rounded-tr-none" style="max-width:75%">
+              <p style="font-size:12px;color:white">Apakah saya perlu bayar PPN juga pak?</p>
+              <p style="font-family:'JetBrains Mono';font-size:10px;color:#a7c8ff;margin-top:4px;text-align:right">09:17</p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0 text-white" style="font-family:'Manrope';font-size:11px;font-weight:700">KP</div>
+            <div class="bg-white p-2.5 rounded-xl rounded-tl-none flex-1 border border-outline-variant">
+              <p style="font-size:12px">Karena omzet tahunan Anda di bawah Rp 4,8 Miliar, Anda <b>belum wajib PKP</b>, jadi tidak perlu bayar PPN dulu. Namun saya sarankan mulai register PKP jika omzet mendekati Rp 1 Miliar/tahun.</p>
+              <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f;margin-top:4px">09:19</p>
+            </div>
+          </div>
+        </div>
+        <button onclick="showToast('Menghubungkan ke konsultan...')" class="w-full py-3 rounded-xl bg-primary text-white active:scale-95" style="font-family:'Manrope';font-size:13px;font-weight:700">
+          💬 Mulai Chat Konsultan
+        </button>
+      </div>
+    </div>
+
+    <!-- CTA Upgrade (sticky) -->
+    <div class="px-5 pb-6">
+      <div class="rounded-2xl p-4 flex items-center justify-between" style="background:#001e40">
+        <div>
+          <p style="font-family:'Manrope';font-weight:700;font-size:13px;color:white">Aktifkan Modul Pajak Premium</p>
+          <p style="font-family:'JetBrains Mono';font-size:10px;color:#a7c8ff">Coretax + Konsultan + Dashboard</p>
+        </div>
+        <button onclick="showToast('Premium aktif! 🎉');document.getElementById('pajak-modal').classList.remove('show')" class="px-4 py-2 rounded-xl text-white active:scale-95" style="background:#fc7728;font-family:'Manrope';font-size:12px;font-weight:700">
+          Rp 150rb/bln
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INVOICE MODAL -->
+<div id="invoice-modal" class="flex-col bg-black/60 backdrop-blur-sm">
+  <div class="mt-auto bg-surface rounded-t-3xl w-full max-h-[88vh] overflow-y-auto slide-up">
+    <div class="sticky top-0 bg-surface rounded-t-3xl z-10 border-b border-outline-variant">
+      <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-outline-variant rounded-full"></div></div>
+      <div class="flex items-center justify-between px-5 pb-4">
+        <div>
+          <h2 style="font-family:'Manrope';font-size:17px;font-weight:700;color:#001e40">Manajemen Invoice</h2>
+          <p style="font-family:'JetBrains Mono';font-size:11px;color:#43474f">Buat & lacak tagihan pelanggan</p>
+        </div>
+        <button onclick="document.getElementById('invoice-modal').classList.remove('show')" class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center active:scale-90">
+          <span class="material-symbols-outlined" style="font-size:20px">close</span>
+        </button>
+      </div>
+    </div>
+    <div class="px-5 py-4 space-y-3">
+      <div class="grid grid-cols-3 gap-2">
+        <div class="bento-card p-3 rounded-xl text-center">
+          <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">Total</p>
+          <p style="font-family:'Manrope';font-size:16px;font-weight:800;color:#001e40">Rp54,5Jt</p>
+        </div>
+        <div class="bento-card p-3 rounded-xl text-center">
+          <p style="font-family:'JetBrains Mono';font-size:10px;color:#1db262">Lunas</p>
+          <p style="font-family:'Manrope';font-size:16px;font-weight:800;color:#1db262">Rp4,5Jt</p>
+        </div>
+        <div class="bento-card p-3 rounded-xl text-center">
+          <p style="font-family:'JetBrains Mono';font-size:10px;color:#a04100">Belum Bayar</p>
+          <p style="font-family:'Manrope';font-size:16px;font-weight:800;color:#a04100">Rp2,7Jt</p>
+        </div>
+      </div>
+      <button onclick="showToast('Membuat invoice baru...')" class="w-full flex items-center justify-center gap-2 bg-primary py-3 rounded-xl text-white active:scale-95" style="font-family:'Manrope';font-size:14px;font-weight:700">
+        <span class="material-symbols-outlined" style="font-size:18px">add</span> Buat Invoice Baru
+      </button>
+      <div class="space-y-2">
+        <div class="bento-card p-3 rounded-xl flex items-center gap-3">
+          <div class="flex-1">
+            <p style="font-weight:600;font-size:13px">INV-2026-047 · GG Alin</p>
+            <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">14 Jun 2026 · Rp 50.000</p>
+          </div>
+          <span style="background:#77fca3;color:#00210d;font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px">Lunas</span>
+        </div>
+        <div class="bento-card p-3 rounded-xl flex items-center gap-3 border-l-4" style="border-left-color:#fc7728">
+          <div class="flex-1">
+            <p style="font-weight:600;font-size:13px">INV-2026-046 · Dany Arthur</p>
+            <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">14 Jun 2026 · Rp 22.000.000</p>
+          </div>
+          <span style="background:#ffdbcb;color:#a04100;font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px">Belum Lunas</span>
+        </div>
+        <div class="bento-card p-3 rounded-xl flex items-center gap-3">
+          <div class="flex-1">
+            <p style="font-weight:600;font-size:13px">INV-2026-045 · Cole Arsy</p>
+            <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">14 Jun 2026 · Rp 25.000</p>
+          </div>
+          <span style="background:#ffdad6;color:#ba1a1a;font-family:'JetBrains Mono';font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px">Void</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div id="detail-modal" class="flex-col bg-black/60 backdrop-blur-sm">
+  <div class="mt-auto bg-surface rounded-t-3xl w-full max-h-[88vh] overflow-y-auto slide-up">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant">
+      <h2 id="modal-title" style="font-family:'Manrope';font-weight:700;font-size:17px;color:#001e40"></h2>
+      <div class="flex gap-2">
+        <button onclick="exportExcel(currentReport)" class="flex items-center gap-1 bg-tertiary-fixed text-on-tertiary-fixed-variant px-3 py-1.5 rounded-xl active:scale-95" style="font-family:'JetBrains Mono';font-size:11px;font-weight:700">
+          <span class="material-symbols-outlined" style="font-size:14px">download</span> Excel
+        </button>
+        <button onclick="document.getElementById('detail-modal').classList.remove('show')" class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center active:scale-90">
+          <span class="material-symbols-outlined" style="font-size:20px">close</span>
+        </button>
+      </div>
+    </div>
+    <div id="modal-content" class="px-5 py-4 pb-8"></div>
+  </div>
+</div>
+
+<!-- PINJAMAN SHEET -->
+<div id="pinjaman-sheet" class="flex-col bg-black/60 backdrop-blur-sm">
+  <div class="mt-auto bg-surface rounded-t-3xl w-full slide-up">
+    <div class="p-5">
+      <div class="w-10 h-1 bg-outline-variant rounded-full mx-auto mb-4"></div>
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary" style="font-size:28px;font-variation-settings:'FILL' 1">account_balance</span>
+        </div>
+        <div>
+          <h3 style="font-family:'Manrope';font-weight:700;font-size:17px;color:#001e40">Pinjaman Mikro</h3>
+          <p style="font-family:'JetBrains Mono';font-size:11px;color:#43474f">KemasDana · Tenor 3–24 Bulan</p>
+        </div>
+      </div>
+      <div class="space-y-2 mb-5">
+        <div class="bg-surface-container-low p-3 rounded-xl flex justify-between items-center">
+          <div><p style="font-weight:600;font-size:13px">Paket Starter</p><p style="font-size:11px;color:#43474f">Limit Rp 5 Juta · Tenor 3 bln</p></div>
+          <span style="background:#e5eeff;color:#001e40;font-family:'JetBrains Mono';font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">0.8%/bln</span>
+        </div>
+        <div class="bg-surface-container-low p-3 rounded-xl flex justify-between items-center">
+          <div><p style="font-weight:600;font-size:13px">Paket Reguler</p><p style="font-size:11px;color:#43474f">Limit Rp 20 Juta · Tenor 12 bln</p></div>
+          <span style="background:#e5eeff;color:#001e40;font-family:'JetBrains Mono';font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">1.0%/bln</span>
+        </div>
+        <div class="rounded-xl p-3 flex justify-between items-center" style="background:#001e40">
+          <div><p style="font-weight:600;font-size:13px;color:white">Paket Premium ⭐</p><p style="font-size:11px;color:#a7c8ff">Limit Rp 50 Juta · Tenor 24 bln</p></div>
+          <span style="background:#fc7728;color:white;font-family:'JetBrains Mono';font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">1.2%/bln</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="document.getElementById('pinjaman-sheet').classList.remove('show')" class="py-3 rounded-xl bg-surface-container-high text-primary" style="font-family:'Manrope';font-weight:700;font-size:14px">Nanti Dulu</button>
+        <button onclick="showToast('Pengajuan berhasil!');document.getElementById('pinjaman-sheet').classList.remove('show')" class="py-3 rounded-xl bg-primary text-white" style="font-family:'Manrope';font-weight:700;font-size:14px">Ajukan Sekarang</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ASURANSI SHEET -->
+<div id="asuransi-sheet" class="flex-col bg-black/60 backdrop-blur-sm">
+  <div class="mt-auto bg-surface rounded-t-3xl w-full slide-up">
+    <div class="p-5">
+      <div class="w-10 h-1 bg-outline-variant rounded-full mx-auto mb-4"></div>
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-14 h-14 rounded-xl bg-tertiary-fixed flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-tertiary-fixed-variant" style="font-size:28px;font-variation-settings:'FILL' 1">health_and_safety</span>
+        </div>
+        <div>
+          <h3 style="font-family:'Manrope';font-weight:700;font-size:17px;color:#001e40">Asuransi Mikro</h3>
+          <p style="font-family:'JetBrains Mono';font-size:11px;color:#1db262">WarungAman by KemasToko</p>
+        </div>
+      </div>
+      <div class="space-y-2 mb-5">
+        <div class="bg-surface-container-low p-3 rounded-xl flex justify-between items-center">
+          <div><p style="font-weight:600;font-size:13px">Paket Basic</p><p style="font-size:11px;color:#43474f">Proteksi stok hingga Rp 10 Jt</p></div>
+          <span style="background:#77fca3;color:#00210d;font-family:'JetBrains Mono';font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">Rp 25rb/bln</span>
+        </div>
+        <div class="rounded-xl p-3 flex justify-between items-center" style="background:#001e40">
+          <div><p style="font-weight:600;font-size:13px;color:white">Paket Premium ⭐</p><p style="font-size:11px;color:#a7c8ff">Proteksi stok + toko hingga Rp 50 Jt</p></div>
+          <span style="background:#fc7728;color:white;font-family:'JetBrains Mono';font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">Rp 75rb/bln</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="document.getElementById('asuransi-sheet').classList.remove('show')" class="py-3 rounded-xl bg-surface-container-high text-primary" style="font-family:'Manrope';font-weight:700;font-size:14px">Nanti Dulu</button>
+        <button onclick="showToast('Asuransi aktif! 🛡️');document.getElementById('asuransi-sheet').classList.remove('show')" class="py-3 rounded-xl bg-on-tertiary-fixed-variant text-on-tertiary-fixed" style="font-family:'Manrope';font-weight:700;font-size:14px">Daftar Sekarang</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 w-full z-50 shadow-lg bg-surface border-t border-outline-variant flex justify-around items-center h-16 px-2">
+  <a href="KEMASKU.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 active:scale-90">
+    <span class="material-symbols-outlined" style="font-size:20px">dashboard</span>
+    <span style="font-family:'JetBrains Mono';font-size:10px">Home</span>
+  </a>
+  <a href="KEMASKASIR.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 active:scale-90">
+    <span class="material-symbols-outlined" style="font-size:20px">point_of_sale</span>
+    <span style="font-family:'JetBrains Mono';font-size:10px">Kasir</span>
+  </a>
+  <a href="STOKTOKO.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 active:scale-90">
+    <span class="material-symbols-outlined" style="font-size:20px">inventory_2</span>
+    <span style="font-family:'JetBrains Mono';font-size:10px">Stok</span>
+  </a>
+  <a href="KEMASMARKET.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 active:scale-90">
+    <span class="material-symbols-outlined" style="font-size:20px">storefront</span>
+    <span style="font-family:'JetBrains Mono';font-size:10px">Market</span>
+  </a>
+  <a href="KEMASUANG.html" class="flex flex-col items-center justify-center px-4 py-1 rounded-xl active:scale-90" style="background:#fc7728">
+    <span class="material-symbols-outlined text-white" style="font-size:20px;font-variation-settings:'FILL' 1">payments</span>
+    <span style="font-family:'JetBrains Mono';font-size:10px;font-weight:700;color:white">Finance</span>
+  </a>
+</nav>
+
+<script>
+let currentReport='all';
+let karyawanCount=3;
+
+const reportData={
+  saldo:{title:'Laporan Saldo & Arus Kas',data:[['Tanggal','Keterangan','Pemasukan','Pengeluaran','Saldo'],['10/06/2026','Penjualan #TRX-0047','16.300','','42.850.000'],['10/06/2026','Penjualan #TRX-0046','28.500','','42.833.700'],['10/06/2026','Beli Stok Distributor','','224.000','42.805.200'],['09/06/2026','Penjualan Harian','3.120.000','','43.029.200']]},
+  pemasukan:{title:'Laporan Pemasukan',data:[['Tanggal','Sumber','Metode','Jumlah'],['10/06/2026','Penjualan Kasir','Tunai','4.250.000'],['09/06/2026','Penjualan Kasir','QRIS','3.120.000'],['08/06/2026','Penjualan Kasir','Transfer','2.800.000']]},
+  pengeluaran:{title:'Laporan Pengeluaran',data:[['Tanggal','Keterangan','Kategori','Jumlah'],['10/06/2026','Beli Stok Indomie','Stok','224.000'],['10/06/2026','Listrik Toko','Operasional','350.000'],['09/06/2026','Beli Stok Air Mineral','Stok','528.000']]},
+  lengkap:{title:'Laporan Keuangan Lengkap',data:[['Jenis Laporan','Nilai'],['Total Pemasukan Bulan Ini','Rp 12.200.000'],['Total Pengeluaran Bulan Ini','Rp 8.400.000'],['Laba Bersih','Rp 3.800.000'],['Margin Laba','32%'],['Total Transaksi','47 transaksi']]},
+  transactions:{title:'Riwayat Transaksi',data:[['No','Tanggal','Waktu','Keterangan','Metode','Debit','Kredit'],['1','10/06/2026','14:22','Penjualan #TRX-0047','Tunai','','16.300'],['2','10/06/2026','13:55','Penjualan #TRX-0046','QRIS','','28.500'],['3','10/06/2026','11:00','Beli Stok','Transfer','224.000','']]},
+  pajak:{title:'Laporan Pajak Coretax 2026',data:[['Masa Pajak','Jenis','Dokumen','Jumlah','Status'],['Jun 2026','PPN Masa','eFaktur#2026-047','1.220.000','Lunas'],['Jun 2026','PPh 21','BP21#2026-047','375.000','Proses'],['Mei 2026','PPN Masa','eFaktur#2026-036','1.100.000','Lunas'],['Mei 2026','PPh 21','BP21#2026-036','350.000','Lunas'],['2025','SPT Tahunan Badan','-','4.200.000','Proses']]},
+};
+
+function openDetail(type){
+  currentReport=type;
+  const r=reportData[type];if(!r)return;
+  document.getElementById('modal-title').textContent=r.title;
+  const headers=r.data[0];const rows=r.data.slice(1);
+  document.getElementById('modal-content').innerHTML=`
+    <div class="overflow-x-auto rounded-xl border border-outline-variant">
+      <table class="w-full" style="font-size:12px;border-collapse:collapse">
+        <thead><tr style="background:#dce9ff">${headers.map(h=>`<th style="padding:10px 12px;text-align:left;font-family:'JetBrains Mono';font-size:10px;color:#43474f;white-space:nowrap">${h}</th>`).join('')}</tr></thead>
+        <tbody>${rows.map((row,i)=>`<tr style="background:${i%2===0?'white':'#f8f9ff'}">${row.map(cell=>`<td style="padding:10px 12px;white-space:nowrap;font-size:12px">${cell}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+  document.getElementById('detail-modal').classList.add('show');
+}
+
+function exportExcel(type){
+  const r=reportData[type]||reportData.lengkap;
+  const data=type==='all'?[['LAPORAN KEUANGAN KEMASTOKO'],['Periode: Juni 2026'],[''],...reportData.saldo.data,[''],...reportData.pemasukan.data,[''],...reportData.pengeluaran.data]:r.data;
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet(data);
+  ws['!cols']=[{wch:20},{wch:30},{wch:18},{wch:18},{wch:18},{wch:18},{wch:18}];
+  XLSX.utils.book_append_sheet(wb,ws,'Laporan');
+  XLSX.writeFile(wb,`KemasToko_${r.title||'Laporan'}_2026.xlsx`);
+  showToast('✅ File Excel berhasil diunduh!');
+}
+
+function setPeriod(el){
+  document.querySelectorAll('[onclick="setPeriod(this)"]').forEach(b=>{b.classList.remove('period-active');b.classList.add('bg-surface-container-high','text-on-surface-variant')});
+  el.classList.add('period-active');el.classList.remove('bg-surface-container-high','text-on-surface-variant');
+}
+
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#001e40;color:white;padding:12px 20px;border-radius:14px;font-family:JetBrains Mono,monospace;font-size:12px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,30,64,.3)';
+  t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+
+function openPajakModal(){
+  document.getElementById('pajak-modal').classList.add('show');
+  setTimeout(()=>{
+    const ring=document.getElementById('pajak-ring');
+    if(ring)ring.style.strokeDashoffset='54';
+  },400);
+  hitungPajak();
+}
+
+const tabs=['overview','kalkulator','ekspor','dashboard','konsultan'];
+function switchTab(tab){
+  tabs.forEach(t=>{
+    document.getElementById('pt-'+t).classList.toggle('hidden',t!==tab);
+    const btn=document.getElementById('tab-'+t);
+    if(btn){
+      if(t===tab){btn.classList.add('tab-active');btn.classList.remove('text-on-surface-variant')}
+      else{btn.classList.remove('tab-active');btn.classList.add('text-on-surface-variant')}
+    }
+  });
+}
+
+function hitungPajak(){
+  const omzet=parseFloat(document.getElementById('omzet-input').value)||0;
+  const pkp=document.getElementById('pkp-status').value;
+  const isPph23=document.getElementById('pph23-toggle').checked;
+  const jasaVal=parseFloat(document.getElementById('jasa-val')?.value)||0;
+  const items=[];
+  // PPh Final 0.5%
+  const pphFinal=Math.round(omzet*0.005);
+  items.push({label:'PPh Final 0,5% (PP 55/2022)',val:pphFinal,note:'Omzet < Rp 500 Jt/tahun'});
+  // PPh 21
+  if(karyawanCount>0){
+    const pph21=Math.round(karyawanCount*2500000*0.05);
+    items.push({label:`PPh Pasal 21 (${karyawanCount} karyawan)`,val:pph21,note:'Est. gaji Rp 2,5 Jt/org'});
+  }
+  // PPN
+  if(pkp==='pkp'){
+    const ppn=Math.round(omzet*0.11);
+    items.push({label:'PPN Keluaran 11% (UU HPP)',val:ppn,note:'Wajib lapor via Coretax e-Faktur'});
+  }
+  // PPh 23
+  if(isPph23&&jasaVal>0){
+    const pph23=Math.round(jasaVal*0.02);
+    items.push({label:'PPh Pasal 23 – Jasa (2%)',val:pph23,note:'Bukti potong via Coretax'});
+  }
+  const total=items.reduce((a,i)=>a+i.val,0);
+  document.getElementById('pajak-breakdown').innerHTML=items.map(i=>`
+    <div class="flex justify-between items-start p-2 rounded-lg bg-white border border-outline-variant">
+      <div>
+        <p style="font-weight:600;font-size:12px">${i.label}</p>
+        <p style="font-family:'JetBrains Mono';font-size:10px;color:#43474f">${i.note}</p>
+      </div>
+      <span style="font-family:'JetBrains Mono';font-weight:700;color:#001e40;font-size:12px;flex-shrink:0;margin-left:8px">Rp ${i.val.toLocaleString('id-ID')}</span>
+    </div>`).join('');
+  document.getElementById('pajak-total').textContent='Rp '+total.toLocaleString('id-ID');
+}
+
+function changeKaryawan(d){
+  karyawanCount=Math.max(0,Math.min(99,karyawanCount+d));
+  document.getElementById('karyawan-count').textContent=karyawanCount;
+  hitungPajak();
+}
+
+// Toggle PPh23
+document.getElementById('pph23-toggle').addEventListener('change',function(){
+  const track=document.getElementById('pph23-track');
+  const thumb=document.getElementById('pph23-thumb');
+  const input=document.getElementById('pph23-input');
+  if(this.checked){track.style.background='#1db262';thumb.style.transform='translateX(24px)';input.classList.remove('hidden')}
+  else{track.style.background='#c3c6d1';thumb.style.transform='none';input.classList.add('hidden')}
+  hitungPajak();
+});
+
+function toggleEkspor(el){
+  const box=el.querySelector('.check-box');
+  const icon=el.querySelector('.check-icon');
+  const checked=!icon.classList.contains('hidden');
+  if(checked){box.style.background='';box.style.borderColor='';icon.classList.add('hidden')}
+  else{box.style.background='#001e40';box.style.borderColor='#001e40';icon.classList.remove('hidden')}
+}
+
+function doEkspor(){
+  const checked=document.querySelectorAll('#ekspor-list .check-icon:not(.hidden)').length;
+  if(checked===0){showToast('⚠ Pilih minimal 1 jenis data');return;}
+  showToast(`✅ ${checked} file Coretax berhasil digenerate!`);
+}
+
+// Close modals on backdrop
+['pajak-modal','invoice-modal','detail-modal','pinjaman-sheet','asuransi-sheet'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){if(e.target===this)this.classList.remove('show')});
+});
+</script>
+</body>
+</html>
