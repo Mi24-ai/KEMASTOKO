@@ -12,7 +12,20 @@ tailwind.config={darkMode:"class",theme:{extend:{colors:{"secondary-container":"
 <style>
 .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
 body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transparent;min-height:max(884px,100dvh)}
-.hide-scrollbar::-webkit-scrollbar{display:none}.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+.hide-scrollbar::-webkit-scrollbar{
+  display:none;
+}
+
+.hide-scrollbar{
+  -ms-overflow-style:none;
+  scrollbar-width:none;
+  scroll-snap-type:x mandatory;
+  cursor:grab;
+}
+
+.hide-scrollbar:active{
+  cursor:grabbing;
+}
 .prod-card{transition:all .15s cubic-bezier(.34,1.56,.64,1);border:1px solid #e5eeff}
 .prod-card:active{transform:scale(.94)}
 .cat-chip{transition:all .15s}
@@ -25,32 +38,100 @@ body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transpar
 </head>
 <body class="pb-24 font-body-lg text-on-surface">
 
-<!-- TopBar -->
-<header class="fixed top-0 w-full z-50 shadow-sm bg-surface flex justify-between items-center px-margin-mobile h-14">
-  <div class="flex items-center gap-3">
-    <a href="KEMASKU.html" class="material-symbols-outlined text-primary p-1">arrow_back</a>
-    <div>
-      <h1 class="font-headline-lg-mobile text-[17px] font-bold text-primary leading-tight">KEMAS Market</h1>
-      <p class="font-label-md text-on-surface-variant text-[10px]">Supplier langsung ke toko</p>
+<!-- Hero Banner Slider -->
+<div class="my-4 overflow-x-auto hide-scrollbar snap-x snap-mandatory">
+  <div class="flex">
+
+    <!-- Banner 1 -->
+    <div class="snap-center min-w-full px-1">
+      <div class="relative h-44 rounded-2xl overflow-hidden">
+
+        <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/indomie%20panjang.jpg?raw=true"
+             class="absolute inset-0 w-full h-full object-cover">
+
+        <div class="absolute inset-0 bg-black/45"></div>
+
+        <div class="relative z-10 p-5 text-white">
+          <span class="bg-orange-500 px-3 py-1 rounded-full text-[10px] font-bold">
+            INDOFOOD
+          </span>
+
+          <h2 class="mt-4 text-2xl font-extrabold leading-tight">
+            Diskon 15%<br>
+            Produk Indomie
+          </h2>
+
+          <p class="text-sm mt-2">
+            Min. pembelian 10 karton
+          </p>
+        </div>
+
+      </div>
     </div>
-  </div>
-  <div class="flex gap-1">
-    <button class="material-symbols-outlined text-primary p-2 rounded-full hover:bg-surface-container-low active:scale-95">shopping_cart</button>
-    <button class="material-symbols-outlined text-primary p-2 rounded-full hover:bg-surface-container-low active:scale-95">notifications</button>
-  </div>
-</header>
 
-<main class="pt-16 px-margin-mobile">
+    <!-- Banner 2 -->
+    <div class="snap-center min-w-full px-1">
+      <div class="relative h-44 rounded-2xl overflow-hidden">
 
-  <!-- Hero Banner -->
-  <div class="my-4 bg-primary-container rounded-2xl p-4 relative overflow-hidden">
-    <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-secondary-container opacity-20 rounded-full"></div>
-    <div class="absolute top-2 right-4 w-12 h-12 bg-on-primary-fixed-variant opacity-15 rounded-full"></div>
-    <p class="font-label-md text-primary-fixed-dim text-[10px] uppercase tracking-widest mb-1">Penawaran Spesial</p>
-    <h2 class="font-headline-lg-mobile text-white font-extrabold text-[18px]">Diskon 15% untuk<br/>Pemesanan Batch</h2>
-    <p class="font-body-sm text-primary-fixed-dim mt-1 text-[12px]">Min. pembelian Rp 500.000 per distributor</p>
-    <span class="inline-block mt-2 bg-secondary-container text-on-secondary font-label-md text-[11px] px-3 py-1 rounded-full font-bold">Berlaku s.d. 30 Juni 2026</span>
+        <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/uni%20iklan.jpg?raw=true"
+             class="absolute inset-0 w-full h-full object-cover">
+
+        <div class="absolute inset-0 bg-black/45"></div>
+
+        <div class="relative z-10 p-5 text-white">
+          <span class="bg-blue-500 px-3 py-1 rounded-full text-[10px] font-bold">
+            UNILEVER
+          </span>
+
+          <h2 class="mt-4 text-2xl font-extrabold leading-tight">
+            Cashback Produk<br>
+            Kebersihan
+          </h2>
+
+          <p class="text-sm mt-2">
+            Sunlight • Rinso • Lifebuoy
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Banner 3 -->
+    <div class="snap-center min-w-full px-1">
+      <div class="relative h-44 rounded-2xl overflow-hidden">
+
+        <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/mayora%20back.webp?raw=true"
+             class="absolute inset-0 w-full h-full object-cover">
+
+        <div class="absolute inset-0 bg-black/45"></div>
+
+        <div class="relative z-10 p-5 text-white">
+          <span class="bg-red-500 px-3 py-1 rounded-full text-[10px] font-bold">
+            MAYORA
+          </span>
+
+          <h2 class="mt-4 text-2xl font-extrabold leading-tight">
+            Promo Roma &<br>
+            Kopiko
+          </h2>
+
+          <p class="text-sm mt-2">
+            Harga distributor terbaik
+          </p>
+        </div>
+
+      </div>
+    </div>
+
   </div>
+</div>
+
+<!-- Indicator -->
+<div class="flex justify-center gap-2 mb-5">
+  <div class="w-2 h-2 rounded-full bg-secondary-container"></div>
+  <div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+  <div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+</div>
 
   <!-- Search -->
   <div class="relative mb-3">
@@ -61,10 +142,10 @@ body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transpar
   <!-- Category Chips -->
   <div class="flex gap-2 overflow-x-auto hide-scrollbar mb-5 pb-1">
     <button onclick="setCat(this,'semua')" class="cat-chip cat-active px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">Semua</button>
-    <button onclick="setCat(this,'sembako')" class="cat-chip bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">🍚 Sembako</button>
-    <button onclick="setCat(this,'minuman')" class="cat-chip bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">🥤 Minuman</button>
-    <button onclick="setCat(this,'snack')" class="cat-chip bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">🍿 Snack</button>
-    <button onclick="setCat(this,'hygiene')" class="cat-chip bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">🧴 Hygiene</button>
+    <button onclick="setCat(this,'sembako')" class="cat-chip bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">Sembako</button>
+    <button onclick="setCat(this,'minuman')" class="cat-chip bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">Minuman</button>
+    <button onclick="setCat(this,'snack')" class="cat-chip bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">Snack</button>
+    <button onclick="setCat(this,'hygiene')" class="cat-chip bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full font-label-md text-[12px] whitespace-nowrap">Hygiene</button>
   </div>
 
   <!-- Distributor Spotlight -->
@@ -75,32 +156,32 @@ body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transpar
   <div class="flex gap-3 overflow-x-auto hide-scrollbar mb-5 pb-2">
     <div class="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer" onclick="filterDist('Indofood')">
       <div class="w-14 h-14 rounded-2xl bg-white border-2 border-secondary-container flex items-center justify-center shadow-sm">
-        <span class="font-bold text-primary text-[11px] text-center leading-tight">Indo food</span>
+        <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/indofood.png?raw=true" class="w-full h-full object-contain p-2" alt="Indofood">
       </div>
       <span class="font-label-md text-[10px] text-on-surface-variant">Indofood</span>
     </div>
     <div class="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer" onclick="filterDist('Wings')">
-      <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant flex items-center justify-center shadow-sm">
-        <span class="font-bold text-primary text-[11px]">Wings</span>
+      <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant flex items-center justify-center shadow-sm overflow-hidden">
+  <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/wings.png?raw=true" class="w-full h-full object-contain p-2" alt="Wings">
       </div>
       <span class="font-label-md text-[10px] text-on-surface-variant">Wings</span>
     </div>
     <div class="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer" onclick="filterDist('Unilever')">
-      <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant flex items-center justify-center shadow-sm">
-        <span class="font-bold text-primary text-[11px]">Unilever</span>
-      </div>
+    <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant flex items-center justify-center shadow-sm overflow-hidden">
+  <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/unilever.jpg?raw=true" class="w-full h-full object-contain p-2" alt="Unilever">
+</div>
       <span class="font-label-md text-[10px] text-on-surface-variant">Unilever</span>
     </div>
     <div class="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer" onclick="filterDist('Mayora')">
-      <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant flex items-center justify-center shadow-sm">
-        <span class="font-bold text-primary text-[11px]">Mayora</span>
-      </div>
+    <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant flex items-center justify-center shadow-sm overflow-hidden">
+  <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/mayora.jpg?raw=true" class="w-full h-full object-contain p-2" alt="Mayora">
+</div>
       <span class="font-label-md text-[10px] text-on-surface-variant">Mayora</span>
     </div>
     <div class="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer" onclick="filterDist('Garudafood')">
-      <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant flex items-center justify-center shadow-sm">
-        <span class="font-bold text-primary text-[11px] text-center leading-tight">Garuda food</span>
-      </div>
+     <div class="w-14 h-14 rounded-2xl bg-white border border-outline-variant flex items-center justify-center shadow-sm overflow-hidden">
+  <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/garudafood.png?raw=true" class="w-full h-full object-contain p-2" alt="Garudafood">
+</div>
       <span class="font-label-md text-[10px] text-on-surface-variant">Garudafood</span>
     </div>
   </div>
@@ -122,7 +203,7 @@ body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transpar
     <!-- Indomie -->
     <div class="prod-card bg-white p-3 rounded-xl shadow-sm" data-cat="sembako" data-dist="Indofood" onclick="openOrder('Indomie Goreng','Indofood','Rp 2.800/pcs','Min. 1 karton (40 pcs)')">
       <div class="aspect-square rounded-xl bg-surface-container mb-2 overflow-hidden relative">
-        <img src="https://lh3.googleusercontent.com/aida/AP1WRLtI5-rtNgXKUlsFCW58syzgUuyPS5JPzGGr-OraJ1UOmL7FXHZhLlYgewIlo_Eyp_3kHPls3S0wJrevnSixpqgBVJwCgPN3ugFeYiBQgmHX31HkBoQB7rpW0tShSUwNCHV2Cf4qA_Iystexvprn-OsWHLKFkdjn-a4bbPxLhU3l5O3VhIoSwJTr2f5NYTZAnnXa5Yjpv3v4D4NsiXlmIqIiICu1co8DR6AjwrLtYZDl4mjEHfWNROqKpA" class="w-full h-full object-cover" alt="Indomie"/>
+        <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/indomie.jpg?raw=true" class="w-full h-full object-cover" alt="Indomie"/>
         <span class="absolute top-2 left-2 bg-tertiary-fixed text-on-tertiary-fixed text-[9px] px-2 py-0.5 rounded-full font-bold">🔥 Terlaris</span>
       </div>
       <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Indomie Goreng</p>
@@ -133,7 +214,7 @@ body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transpar
     <!-- Air Mineral -->
     <div class="prod-card bg-white p-3 rounded-xl shadow-sm" data-cat="minuman" data-dist="Indofood" onclick="openOrder('Air Mineral AQUA 600ml','Danone','Rp 2.200/btl','Min. 1 dus (24 btl)')">
       <div class="aspect-square rounded-xl bg-surface-container mb-2 overflow-hidden relative">
-        <img src="https://lh3.googleusercontent.com/aida/AP1WRLtRo4BK6dIbwGVv50lRCEuYDEMnEhImemI4xGwFq1DUi-q0TqYKyJTQj26za9s-HLSrn8UcuXprw-X6A5JbqE4wVaszqVNBRqrkQMLX6ZGc2JSHlrPUqzPLGUc_Gba1__aHwv7gl8yt904ROuyBzJQVVXjEVl08bzm7K9WOILRR3_e1uU3pyKaoarN85oa3BNHMo8TM59V3vBsrog6GkQ8324XWAcVpAlLxkj3PyxE3LPtZGo4KERDq0g" class="w-full h-full object-cover" alt="Air Mineral"/>
+        <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/aqua%20sekardus.jpg?raw=true" class="w-full h-full object-cover" alt="Air Mineral"/>
         <span class="absolute top-2 left-2 bg-secondary-fixed text-on-secondary-fixed text-[9px] px-2 py-0.5 rounded-full font-bold">-10%</span>
       </div>
       <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Air Mineral AQUA 600ml</p>
@@ -144,7 +225,7 @@ body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transpar
     <!-- Gula -->
     <div class="prod-card bg-white p-3 rounded-xl shadow-sm" data-cat="sembako" data-dist="Lain" onclick="openOrder('Gula Pasir Gulaku 1kg','PT Gulaku','Rp 13.500/kg','Min. 10 kg')">
       <div class="aspect-square rounded-xl bg-surface-container mb-2 overflow-hidden">
-        <img src="https://lh3.googleusercontent.com/aida/AP1WRLtW-mwknNe-_ywgfzzgu-xgqNjxo898vLjPXlpNA7GNKhRQygALYlxnCtJsOyJe_0Rs6Lyp4fTjdhYj6X_GQ2P03Fn5LSpoBWS6oFM7epgvRHxSyHIwLzxa7AAtngh5xAbNe8r3FlYiPOFdiRWBrkDf_Q6S8EwBtil7XeI73v3WtGodlJe21c9aYKvnKQYtHOOJvHxw-EBpetHlWjuZRpxJ5o3h-UuFp9I067wObJbfmNWNsAhQ7HsUWg" class="w-full h-full object-cover" alt="Gula"/>
+        <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/gulaku.jpg?raw=true" class="w-full h-full object-cover" alt="Gula"/>
       </div>
       <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Gula Pasir Gulaku 1kg</p>
       <p class="font-label-md text-secondary-container font-bold text-[12px]">Rp 13.500<span class="text-outline font-normal">/kg</span></p>
@@ -154,7 +235,7 @@ body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transpar
     <!-- Sabun -->
     <div class="prod-card bg-white p-3 rounded-xl shadow-sm" data-cat="hygiene" data-dist="Unilever" onclick="openOrder('Sabun Cuci Sunlight 750ml','Unilever','Rp 11.500/btl','Min. 1 karton (12 btl)')">
       <div class="aspect-square rounded-xl bg-surface-container mb-2 overflow-hidden">
-        <img src="https://lh3.googleusercontent.com/aida/AP1WRLujHQ_oSRkFssHp0Hb5a_X3ybA2ix8qW4SS5cR2NtxajeHNem8wS3hU27FRWjgslWwgnvMKqP0gLaAFikOe6JsRwRi0goKcBgRYzG_-pbkNWX25RipXvWnjRz88fneFxkNJIBnpoXjva600vAcN97dWec3xP2TOt-teLc5idObBGYCNXuF--zJlYHXaeMco1gDxHzeGuHUehionWcfAYm2SQpMRCHEiqWBD4oynoaZPeobJfFpM69ISJQ" class="w-full h-full object-cover" alt="Sabun"/>
+        <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/sunlight.jpg?raw=true" class="w-full h-full object-cover" alt="Sabun"/>
       </div>
       <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Sabun Cuci Sunlight</p>
       <p class="font-label-md text-secondary-container font-bold text-[12px]">Rp 11.500<span class="text-outline font-normal">/btl</span></p>
@@ -164,7 +245,7 @@ body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transpar
     <!-- Roma Kelapa -->
     <div class="prod-card bg-white p-3 rounded-xl shadow-sm" data-cat="snack" data-dist="Mayora" onclick="openOrder('Roma Kelapa 300g','Mayora','Rp 8.500/pack','Min. 1 karton (20 pack)')">
       <div class="aspect-square rounded-xl bg-surface-container mb-2 overflow-hidden">
-        <img src="https://lh3.googleusercontent.com/aida/AP1WRLvB-jJbEIoKgdltQWUDr5HFzu2GCvrqiyBo66ZNz2m6UfZKxHCA6SwL3dCm9d6iOQTwE5vgGaXngctKFGmu273xXh5LU3ncWCqqJbk3Fa94IgtWKzjCTPZhyq1oBgQGytIlmBCLAtiDzTsEsUt_oV31U8RiR_M9cpBBYdfyzh2XMXKpAGUydkmj8By0Dc5p9SoeMBxjF65A5eCwP0hZO84EvvNg1anRzrn-L14KzLL1ZTobvW54cbnoFw" class="w-full h-full object-cover" alt="Roma"/>
+        <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/roma.jpg?raw=true" class="w-full h-full object-cover" alt="Roma"/>
       </div>
       <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Roma Kelapa 300g</p>
       <p class="font-label-md text-secondary-container font-bold text-[12px]">Rp 8.500<span class="text-outline font-normal">/pack</span></p>
@@ -174,7 +255,7 @@ body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transpar
     <!-- Kopi -->
     <div class="prod-card bg-white p-3 rounded-xl shadow-sm" data-cat="minuman" data-dist="Garudafood" onclick="openOrder('Kopi Kapal Api 165g','Kapal Api Group','Rp 10.200/pack','Min. 1 karton (10 pack)')">
       <div class="aspect-square rounded-xl bg-surface-container mb-2 overflow-hidden">
-        <img src="https://lh3.googleusercontent.com/aida/AP1WRLtAeWcKaCuKJejDbOaAujQUK2PXBq90J7o0vNSUYNIEItqdZLOSMQ--zr5FH-sa2VoEOPOIQvMQ1UQLK4FXfvL2NmzkicRHb_ZrCdlIwP3vUt58h0Bt6oGpGLbnqO3LvXJuCulUu72KO_vKH7LLuoBJ9zRbY5F5YeWA23dglkUMXSqMHP5AKNo_DtcYn-lzT_vYk0uxW2NZJstOvnXH98n4VLJnsyGgtQimEvhyJq1XQXPuEv2JHjfzNg" class="w-full h-full object-cover" alt="Kopi"/>
+        <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/kapal%20api.jpg?raw=true" class="w-full h-full object-cover" alt="Kopi"/>
       </div>
       <p class="font-body-sm font-semibold text-on-surface text-[13px] truncate">Kopi Kapal Api 165g</p>
       <p class="font-label-md text-secondary-container font-bold text-[12px]">Rp 10.200<span class="text-outline font-normal">/pack</span></p>
