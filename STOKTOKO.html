@@ -22,25 +22,58 @@ body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transpar
 .tab-active{background:#001e40;color:white}
 .tab-item{transition:all .15s}
 .nav-active{background:#fc7728;color:white;border-radius:12px}
+
+/* ── SCAN OVERLAY ── */
 #scan-overlay{display:none;position:fixed;inset:0;z-index:200;background:#f8f9ff;flex-direction:column}
 #scan-overlay.show{display:flex}
-.vf-scan-line{animation:scanline 1.8s linear infinite}
-@keyframes scanline{0%{transform:translateY(0)}100%{transform:translateY(200px)}}
+
+/* ── DETAIL SHEET ── */
 #detail-sheet{display:none;position:fixed;inset:0;z-index:150}
 #detail-sheet.show{display:flex}
-/* Tambah Produk Modal */
+
+/* ── TAMBAH MODAL ── */
 #tambah-modal{display:none;position:fixed;inset:0;z-index:250;flex-direction:column}
 #tambah-modal.show{display:flex}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .slide-up{animation:slideUp .3s cubic-bezier(.4,0,.2,1)}
-/* CRM Sheet */
+
+/* ── CRM SHEET ── */
 #crm-sheet{display:none;position:fixed;inset:0;z-index:150}
 #crm-sheet.show{display:flex}
+
+/* ── SCAN RESULT PANEL ── */
+#scan-result{display:none}
+#scan-result.show{display:block}
+
+/* ── SCANNER LASER ANIMATION ── */
+.vf-scan-line{animation:scanline 1.8s linear infinite}
+@keyframes scanline{0%{transform:translateY(0)}100%{transform:translateY(200px)}}
+
+/* ── STOCK RING ── */
+@keyframes ringFill{from{stroke-dashoffset:283}to{stroke-dashoffset:var(--target-offset)}}
+.ring-anim{animation:ringFill 1s cubic-bezier(.4,0,.2,1) .2s forwards}
+
+/* ── MODE TABS ── */
+.scan-mode-btn{transition:all .15s;border:2px solid transparent}
+.scan-mode-btn.active-check{background:#001e40;color:white;border-color:#001e40}
+.scan-mode-btn.active-in{background:#d5f5e3;color:#005228;border-color:#1db262}
+.scan-mode-btn.active-out{background:#ffe5e5;color:#ba1a1a;border-color:#ba1a1a}
+
+/* ── TOAST ── */
+.success-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#001e40;color:white;padding:12px 20px;border-radius:14px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,30,64,.3)}
+
+/* ── FORM INPUTS ── */
 .form-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:#43474f;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
 .form-input{width:100%;padding:10px 12px;border:1px solid #c3c6d1;border-radius:12px;font-family:'Inter',sans-serif;font-size:14px;color:#0b1c30;background:#fff;outline:none}
 .form-input:focus{border-color:#fc7728;box-shadow:0 0 0 3px rgba(252,119,40,.12)}
 select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23737780' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
-.success-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#001e40;color:white;padding:12px 20px;border-radius:14px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,30,64,.3)}
+
+/* ── RESULT PULSE ── */
+@keyframes resultIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.result-in{animation:resultIn .3s cubic-bezier(.34,1.56,.64,1) forwards}
+
+/* ── HISTORY CHIP ── */
+.hist-chip{background:#e5eeff;border-radius:20px;padding:2px 8px;font-size:10px;font-family:'JetBrains Mono',monospace;color:#001e40;font-weight:600}
 </style>
 </head>
 <body class="pb-24 font-body-lg text-on-surface">
@@ -52,7 +85,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <h1 class="font-headline-lg-mobile text-[18px] font-bold text-primary">KEMAS STOK</h1>
   </div>
   <div class="flex items-center gap-1">
-    <button onclick="document.getElementById('scan-overlay').classList.add('show')" class="material-symbols-outlined text-secondary-container p-2 hover:bg-surface-container-low rounded-full active:scale-95">barcode_scanner</button>
+    <button onclick="openScanner('cek')" class="material-symbols-outlined text-secondary-container p-2 hover:bg-surface-container-low rounded-full active:scale-95">barcode_scanner</button>
     <button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container-low rounded-full active:scale-95 relative">
       notifications<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface"></span>
     </button>
@@ -60,7 +93,6 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 </header>
 
 <main class="pt-16 px-margin-mobile">
-
   <!-- Stats Bento -->
   <section class="grid grid-cols-2 gap-3 my-4">
     <div class="card p-4 rounded-xl flex flex-col gap-2">
@@ -75,16 +107,13 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       <span class="material-symbols-outlined text-error" style="font-variation-settings:'FILL' 1">warning</span>
       <div><p class="font-body-sm text-on-surface-variant text-[12px]">Stok Kritis</p><p class="font-title-md text-error font-extrabold">3 Item</p></div>
     </div>
-    <div class="card p-4 rounded-xl flex flex-col gap-2" onclick="document.getElementById('crm-sheet').classList.add('show')" style="cursor:pointer">
+    <div class="card p-4 rounded-xl flex flex-col gap-2 cursor-pointer" onclick="document.getElementById('crm-sheet').classList.add('show')">
       <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">people</span>
-      <div>
-        <p class="font-body-sm text-on-surface-variant text-[12px]">Pelanggan Aktif</p>
-        <p class="font-title-md text-primary font-extrabold">124 Orang</p>
-      </div>
+      <div><p class="font-body-sm text-on-surface-variant text-[12px]">Pelanggan Aktif</p><p class="font-title-md text-primary font-extrabold">124 Orang</p></div>
     </div>
   </section>
 
-  <!-- Alert: Stok Menipis -->
+  <!-- Alert -->
   <section class="mb-5">
     <div class="flex items-center gap-2 mb-3">
       <span class="material-symbols-outlined text-error text-[20px]" style="font-variation-settings:'FILL' 1">notification_important</span>
@@ -107,7 +136,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       <div class="alert-card p-4 rounded-xl flex justify-between items-center card">
         <div class="flex gap-3 items-center">
           <div class="w-12 h-12 rounded-xl bg-surface-container overflow-hidden flex-shrink-0 border border-error-container flex items-center justify-center">
-            <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/golda.jpg?raw=true" class=""w-full h-full object-cover" alt="Golda"/>
+            <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/golda.jpg?raw=true" class="w-full h-full object-cover" alt="Golda"/>
           </div>
           <div>
             <p class="font-body-sm font-semibold text-on-surface">Golda</p>
@@ -115,7 +144,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
             <div class="stock-bar mt-1 w-24"><div class="stock-bar-fill bg-error" style="width:4%"></div></div>
           </div>
         </div>
-        <button onclick="showToast('Restock Headphone dipesan!')" class="bg-error text-on-error px-3 py-2 rounded-lg text-[12px] font-bold active:scale-95">Restock</button>
+        <button onclick="showToast('Restock Golda dipesan!')" class="bg-error text-on-error px-3 py-2 rounded-lg text-[12px] font-bold active:scale-95">Restock</button>
       </div>
     </div>
   </section>
@@ -136,7 +165,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <!-- Stock List -->
   <div class="flex justify-between items-center mb-3">
     <h2 class="font-title-md text-primary text-[16px]">Daftar Stok</h2>
-    <button onclick="document.getElementById('scan-overlay').classList.add('show')" class="bg-secondary-container text-on-secondary px-4 py-2 rounded-xl flex items-center gap-2 active:scale-95 text-[12px] font-bold shadow-sm">
+    <button onclick="openScanner('cek')" class="bg-secondary-container text-on-secondary px-4 py-2 rounded-xl flex items-center gap-2 active:scale-95 text-[12px] font-bold shadow-sm">
       <span class="material-symbols-outlined text-[16px]">barcode_scanner</span> Scan Stok
     </button>
   </div>
@@ -184,13 +213,13 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       </div>
       <div class="text-right flex-shrink-0"><p class="font-title-md text-primary font-extrabold text-[18px]">120</p><p class="font-label-md text-outline text-[10px] uppercase">Unit</p></div>
     </div>
-    <div class="card p-4 rounded-xl flex gap-3 items-center" data-name="air mineral" data-cat="minuman" onclick="openDetail('Aqua','SM-2024-010',42,'tersedia','Minuman','Rp 3.500')">
+    <div class="card p-4 rounded-xl flex gap-3 items-center" data-name="aqua air mineral" data-cat="minuman" onclick="openDetail('Aqua 600ml','SM-2024-010',42,'tersedia','Minuman','Rp 3.500')">
       <div class="w-14 h-14 rounded-xl bg-surface-container overflow-hidden flex-shrink-0">
         <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/aqua.jpg?raw=true" class="w-full h-full object-cover" alt="Aqua"/>
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
-          <p class="font-body-sm font-semibold text-on-surface leading-tight">Aqua</p>
+          <p class="font-body-sm font-semibold text-on-surface leading-tight">Aqua 600ml</p>
           <span class="bg-tertiary-fixed text-on-tertiary-fixed text-[9px] px-2 py-0.5 rounded-full font-bold flex-shrink-0">OK</span>
         </div>
         <p class="font-label-md text-on-surface-variant text-[10px]">SM-2024-010 · Minuman</p>
@@ -198,9 +227,9 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       </div>
       <div class="text-right flex-shrink-0"><p class="font-title-md text-primary font-extrabold text-[18px]">42</p><p class="font-label-md text-outline text-[10px] uppercase">Unit</p></div>
     </div>
-    <div class="card p-4 rounded-xl flex gap-3 items-center" data-name="japota" data-cat="makanan" onclick="openDetail('Japota Honey Butter','SM-2024-055',18,'tersedia','Makanan & Snack','Rp 5.500')">
-      <div class="w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center flex-shrink-0">
-         <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/japota.jpg?raw=true" class="w-full h-full object-cover" alt="japota"/>
+    <div class="card p-4 rounded-xl flex gap-3 items-center" data-name="japota" data-cat="makanan" onclick="openDetail('Japota Rumput Laut','SM-2024-055',18,'tersedia','Makanan & Snack','Rp 5.500')">
+      <div class="w-14 h-14 rounded-xl bg-surface-container overflow-hidden flex-shrink-0">
+        <img src="https://github.com/Mi24-ai/KEMASTOKO/blob/main/japota.jpg?raw=true" class="w-full h-full object-cover" alt="Japota"/>
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
@@ -212,7 +241,6 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       </div>
       <div class="text-right flex-shrink-0"><p class="font-title-md text-primary font-extrabold text-[18px]">18</p><p class="font-label-md text-outline text-[10px] uppercase">Unit</p></div>
     </div>
-    <!-- Produk baru yang ditambahkan lewat form -->
     <div id="new-products-container"></div>
   </div>
 
@@ -248,202 +276,176 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     </div>
   </div>
 
-  <!-- Tambah Produk CTA -->
+  <!-- Tambah CTA -->
   <button onclick="document.getElementById('tambah-modal').classList.add('show')" class="w-full bg-primary text-on-primary py-4 rounded-xl font-title-md flex items-center justify-center gap-2 shadow-md active:scale-95 mb-2">
     <span class="material-symbols-outlined">add_box</span> Tambah Produk Baru
   </button>
-
 </main>
 
-<!-- ══ MODAL TAMBAH PRODUK ══ -->
-<div id="tambah-modal" class="flex-col bg-black/60 backdrop-blur-sm">
-  <div class="mt-auto bg-surface rounded-t-3xl w-full max-h-[92vh] overflow-y-auto slide-up">
-    <div class="sticky top-0 bg-surface rounded-t-3xl z-10 border-b border-outline-variant">
-      <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-outline-variant rounded-full"></div></div>
-      <div class="flex items-center justify-between px-5 pb-4">
-        <div>
-          <h2 class="font-title-md text-primary text-[17px] font-bold">Tambah Produk Baru</h2>
-          <p class="font-label-md text-on-surface-variant text-[11px]">Isi semua informasi produk</p>
+<!-- ══════════════════════════════════════════════
+     SCANNER OVERLAY — 3 MODE: Cek / Masuk / Keluar
+═══════════════════════════════════════════════════ -->
+<div id="scan-overlay">
+
+  <!-- Header -->
+  <header class="flex items-center justify-between px-4 h-14 border-b border-outline-variant bg-surface flex-shrink-0">
+    <button onclick="closeScan()" class="material-symbols-outlined text-primary p-1">arrow_back</button>
+    <h1 class="font-title-md text-primary">Scan Barcode / QR</h1>
+    <button class="material-symbols-outlined text-primary p-1">flashlight_on</button>
+  </header>
+  <!-- Mode Tabs -->
+<div class="px-4 pt-3 pb-3 bg-surface border-b border-outline-variant flex-shrink-0">
+  <button
+    id="mode-cek"
+    class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-[15px] flex items-center justify-center gap-2 shadow-sm"
+  >
+    <span class="material-symbols-outlined text-[20px]">
+      qr_code_scanner
+    </span>
+    Cek Stok
+  </button>
+</div>
+
+  <!-- Body -->
+  <div class="flex-1 flex flex-col p-4 gap-4 overflow-y-auto">
+
+    <!-- Viewfinder -->
+    <div class="relative rounded-2xl overflow-hidden bg-black flex-shrink-0" style="aspect-ratio:1">
+      <div class="absolute inset-0 bg-[radial-gradient(circle,transparent_50%,rgba(0,0,0,0.75)_100%)]"></div>
+      <!-- Corners -->
+      <div class="absolute inset-0 flex items-center justify-center">
+        <div class="w-52 h-52 relative">
+          <div class="absolute top-0 left-0 w-7 h-7 border-t-4 border-l-4 border-secondary-container rounded-tl-lg"></div>
+          <div class="absolute top-0 right-0 w-7 h-7 border-t-4 border-r-4 border-secondary-container rounded-tr-lg"></div>
+          <div class="absolute bottom-0 left-0 w-7 h-7 border-b-4 border-l-4 border-secondary-container rounded-bl-lg"></div>
+          <div class="absolute bottom-0 right-0 w-7 h-7 border-b-4 border-r-4 border-secondary-container rounded-br-lg"></div>
+          <div class="vf-scan-line absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-secondary-container to-transparent"></div>
         </div>
-        <button onclick="document.getElementById('tambah-modal').classList.remove('show')" class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center active:scale-90">
-          <span class="material-symbols-outlined text-on-surface text-[20px]">close</span>
-        </button>
       </div>
+      <!-- Hint label -->
+      <p id="scan-hint" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-[12px] bg-black/60 px-3 py-1 rounded-full font-body-sm whitespace-nowrap">Arahkan ke barcode produk</p>
+      <!-- Simulated scan button (prototype) -->
+      <button onclick="simulateScan()" class="absolute top-3 right-3 bg-secondary-container text-on-secondary px-3 py-1.5 rounded-full font-label-md text-[11px] font-bold active:scale-90 z-10">
+        Demo Scan ▶
+      </button>
     </div>
 
-    <div class="px-5 py-4 space-y-4">
-      <!-- Foto Produk -->
-      <div class="flex flex-col items-center">
-        <div id="foto-preview" class="w-24 h-24 rounded-2xl bg-surface-container-high flex flex-col items-center justify-center border-2 border-dashed border-outline-variant cursor-pointer active:scale-95" onclick="showToast('Fitur kamera siap digunakan')">
-          <span class="material-symbols-outlined text-outline text-[32px]">add_photo_alternate</span>
-          <p class="font-label-md text-on-surface-variant text-[10px] mt-1">Foto Produk</p>
-        </div>
-      </div>
+    <!-- RESULT PANEL (Cek Stok) -->
+    <div id="scan-result" class="result-in">
 
-      <!-- Nama Produk -->
-      <div>
-        <label class="form-label">Nama Produk *</label>
-        <input id="inp-nama" class="form-input" type="text" placeholder="cth: Indomie Goreng Spesial"/>
-      </div>
-
-      <!-- SKU & Barcode -->
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="form-label">Kode SKU</label>
-          <input id="inp-sku" class="form-input" type="text" placeholder="SM-2024-XXX"/>
-        </div>
-        <div>
-          <label class="form-label">Barcode</label>
-          <div class="relative">
-            <input id="inp-barcode" class="form-input" type="text" placeholder="8991234567890" style="padding-right:36px"/>
-            <button onclick="showToast('Scan barcode...')" class="absolute right-2 top-1/2 -translate-y-1/2">
-              <span class="material-symbols-outlined text-outline text-[20px]">barcode_scanner</span>
-            </button>
+      <!-- Product identity card -->
+      <div class="card rounded-2xl overflow-hidden">
+        <!-- Top: product info -->
+        <div class="flex gap-3 p-4">
+          <div class="w-16 h-16 rounded-xl bg-surface-container overflow-hidden flex-shrink-0">
+            <img id="res-img" src="" class="w-full h-full object-cover" alt="produk"/>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p id="res-name" class="font-title-md text-primary font-bold text-[15px] leading-tight"></p>
+            <p id="res-sku" class="font-label-md text-outline text-[10px] mt-0.5"></p>
+            <p id="res-cat" class="font-label-md text-on-surface-variant text-[11px] mt-0.5"></p>
+            <div class="flex gap-2 mt-2">
+              <span id="res-harga" class="font-label-md text-secondary-container font-bold text-[12px]"></span>
+              <span id="res-supplier" class="font-label-md text-on-surface-variant text-[11px]"></span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Kategori -->
-      <div>
-        <label class="form-label">Kategori *</label>
-        <select id="inp-kategori" class="form-input">
-          <option value="">Pilih kategori...</option>
-          <option value="makanan">Makanan & Snack</option>
-          <option value="minuman">Minuman</option>
-          <option value="sembako">Sembako</option>
-          <option value="kebersihan">Kebersihan</option>
-          <option value="rumah">Kebutuhan Rumah</option>
-          <option value="lainnya">Lainnya</option>
-        </select>
-      </div>
+        <!-- Stock visual -->
+        <div class="px-4 pb-4">
+          <div class="bg-surface-container-low rounded-xl p-4 flex items-center gap-4">
+            <!-- Ring gauge -->
+            <div class="relative flex-shrink-0" style="width:72px;height:72px">
+              <svg width="72" height="72" viewBox="0 0 72 72" class="-rotate-90">
+                <circle cx="36" cy="36" r="28" fill="none" stroke="#e5eeff" stroke-width="8"/>
+                <circle id="res-ring" cx="36" cy="36" r="28" fill="none" stroke="#1db262" stroke-width="8"
+                  stroke-linecap="round" stroke-dasharray="176" stroke-dashoffset="176"
+                  style="transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1) .2s, stroke .3s"/>
+              </svg>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span id="res-pct" class="font-label-md font-bold text-[14px] text-primary"></span>
+              </div>
+            </div>
+            <!-- Numbers -->
+            <div class="flex-1">
+              <div class="flex justify-between items-end mb-1">
+                <div>
+                  <p class="font-label-md text-on-surface-variant text-[10px]">Stok Saat Ini</p>
+                  <p id="res-qty" class="font-display-lg text-primary font-extrabold text-[32px] leading-none"></p>
+                  <p class="font-label-md text-outline text-[10px]">Unit tersedia</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-label-md text-on-surface-variant text-[10px]">Min. Alert</p>
+                  <p id="res-min" class="font-title-md text-error font-bold text-[18px] leading-tight"></p>
+                  <p class="font-label-md text-outline text-[10px]">Unit</p>
+                </div>
+              </div>
+              <!-- Bar -->
+              <div class="stock-bar w-full mt-2">
+                <div id="res-bar" class="stock-bar-fill" style="width:0%;transition:width 1s ease .3s"></div>
+              </div>
+            </div>
+          </div>
 
-      <!-- Harga Beli & Jual -->
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="form-label">Harga Beli (HPP)</label>
-          <div class="relative">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 font-body-sm font-bold text-on-surface-variant text-[12px]">Rp</span>
-            <input id="inp-harga-beli" class="form-input" type="number" placeholder="2.500" style="padding-left:32px" oninput="hitungMargin()"/>
+          <!-- Status badge -->
+          <div id="res-status-wrap" class="mt-3 px-4 py-2.5 rounded-xl flex items-center gap-2">
+            <span id="res-status-icon" class="material-symbols-outlined text-[20px]"></span>
+            <div class="flex-1">
+              <p id="res-status-text" class="font-body-sm font-bold text-[13px]"></p>
+              <p id="res-status-sub" class="font-label-md text-[10px]"></p>
+            </div>
+            <span id="res-status-badge" class="font-label-md text-[10px] px-3 py-1 rounded-full font-bold flex-shrink-0"></span>
           </div>
         </div>
-        <div>
-          <label class="form-label">Harga Jual *</label>
-          <div class="relative">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 font-body-sm font-bold text-on-surface-variant text-[12px]">Rp</span>
-            <input id="inp-harga-jual" class="form-input" type="number" placeholder="3.500" style="padding-left:32px" oninput="hitungMargin()"/>
-          </div>
-        </div>
-      </div>
 
-      <!-- Margin Preview -->
-      <div id="margin-box" class="hidden bg-surface-container-high p-3 rounded-xl flex justify-between items-center">
-        <span class="font-label-md text-on-surface-variant text-[11px]">Estimasi Margin</span>
-        <span id="margin-val" class="font-label-md font-bold text-on-tertiary-container text-[13px]">0%</span>
-      </div>
-
-      <!-- Stok Awal & Minimum -->
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="form-label">Stok Awal *</label>
-          <input id="inp-stok" class="form-input" type="number" placeholder="50" min="0"/>
+        <!-- Riwayat mini -->
+        <div class="border-t border-outline-variant px-4 py-3">
+          <p class="font-label-md text-on-surface-variant text-[10px] uppercase tracking-wider mb-2">Riwayat Terakhir</p>
+          <div id="res-history" class="space-y-1.5"></div>
         </div>
-        <div>
-          <label class="form-label">Minimum Alert</label>
-          <input id="inp-min-stok" class="form-input" type="number" placeholder="10" min="1"/>
-        </div>
-      </div>
-
-      <!-- Satuan & Berat -->
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="form-label">Satuan</label>
-          <select id="inp-satuan" class="form-input">
-            <option>Pcs</option><option>Karton</option><option>Dus</option><option>Lusin</option><option>Kg</option><option>Gram</option><option>Liter</option><option>Ml</option>
-          </select>
-        </div>
-        <div>
-          <label class="form-label">Supplier</label>
-          <select id="inp-supplier" class="form-input">
-            <option value="">Pilih supplier...</option>
-            <option>Indofood</option><option>Wings</option><option>Unilever</option><option>Mayora</option><option>Garudafood</option><option>Supplier Lain</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Keterangan -->
-      <div>
-        <label class="form-label">Keterangan (opsional)</label>
-        <textarea id="inp-ket" class="form-input" rows="2" placeholder="Catatan tambahan produk..."></textarea>
       </div>
 
       <!-- Aksi -->
-      <div class="grid grid-cols-2 gap-3 pb-4">
-        <button onclick="document.getElementById('tambah-modal').classList.remove('show')" class="py-3 rounded-xl bg-surface-container-high text-primary font-bold font-body-sm active:scale-95">Batal</button>
-        <button onclick="simpanProduk()" class="py-3 rounded-xl bg-primary text-white font-bold font-body-sm active:scale-95 shadow-md">Simpan Produk ✓</button>
-      </div>
-    </div>
-  </div>
+ <div id="res-aksi-cek" class="mt-3">
+  <button
+    onclick="closeScanToDetail()"
+    class="w-full py-4 rounded-2xl bg-primary text-white font-bold text-[14px] flex items-center justify-center gap-2 active:scale-95 shadow-sm"
+  >
+    <span class="material-symbols-outlined">
+      open_in_new
+    </span>
+    Detail Produk
+  </button>
 </div>
 
-<!-- ══ CRM SHEET ══ -->
-<div id="crm-sheet">
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="document.getElementById('crm-sheet').classList.remove('show')"></div>
-  <div class="absolute bottom-0 left-0 right-0 bg-surface rounded-t-3xl z-10 max-h-[85vh] overflow-y-auto">
-    <div class="p-5">
-      <div class="w-10 h-1.5 bg-outline-variant rounded-full mx-auto mb-4"></div>
-      <div class="flex items-center gap-3 mb-5">
-        <div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center">
-          <span class="material-symbols-outlined text-on-primary-container text-[24px]" style="font-variation-settings:'FILL' 1">people</span>
+      <!-- Qty input (Masuk/Keluar mode) -->
+      <div id="res-aksi-qty" class="hidden mt-3 space-y-3">
+        <p id="qty-mode-label" class="font-label-md text-on-surface-variant text-[11px] uppercase tracking-wider">Jumlah Unit</p>
+        <div class="flex items-center gap-3 bg-surface-container-lowest border border-outline-variant rounded-xl p-3">
+          <button onclick="changeScanQty(-1)" class="w-11 h-11 rounded-xl bg-surface-container flex items-center justify-center text-primary font-bold text-[20px] active:scale-90">−</button>
+          <input id="scan-qty" type="number" value="1" min="1" class="flex-1 text-center bg-transparent font-headline-lg-mobile text-primary font-extrabold border-none outline-none text-[28px]"/>
+          <button onclick="changeScanQty(1)" class="w-11 h-11 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary font-bold text-[20px] active:scale-90">+</button>
         </div>
-        <div>
-          <h3 class="font-title-md text-primary font-bold">Data Pelanggan</h3>
-          <p class="font-label-md text-on-surface-variant text-[11px]">124 pelanggan aktif · Juni 2026</p>
-        </div>
+        <button id="confirm-qty-btn" onclick="confirmQty()" class="w-full py-4 rounded-xl font-title-md text-white font-bold active:scale-95 shadow-md">Konfirmasi</button>
       </div>
-      <!-- Stats -->
-      <div class="grid grid-cols-3 gap-2 mb-4">
-        <div class="bg-surface-container-high p-3 rounded-xl text-center">
-          <p class="font-title-md text-primary font-extrabold text-[18px]">124</p>
-          <p class="font-label-md text-on-surface-variant text-[10px]">Total</p>
-        </div>
-        <div class="bg-tertiary-fixed/30 p-3 rounded-xl text-center">
-          <p class="font-title-md text-on-tertiary-container font-extrabold text-[18px]">48</p>
-          <p class="font-label-md text-on-surface-variant text-[10px]">Aktif bulan ini</p>
-        </div>
-        <div class="bg-secondary-fixed p-3 rounded-xl text-center">
-          <p class="font-title-md text-secondary font-extrabold text-[18px]">12</p>
-          <p class="font-label-md text-on-surface-variant text-[10px]">Pelanggan baru</p>
-        </div>
-      </div>
-      <!-- List -->
-      <div class="space-y-2">
-        <div class="bg-white border border-outline-variant p-3 rounded-xl flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center font-bold text-on-primary-container text-[13px] flex-shrink-0">BA</div>
-          <div class="flex-1">
-            <p class="font-body-sm font-bold text-[13px]">Bu Ani</p>
-            <p class="font-label-md text-on-surface-variant text-[10px]">47 transaksi · Total Rp 1,2 Jt</p>
-          </div>
-          <span class="bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-[9px] px-2 py-0.5 rounded-full font-bold">VIP</span>
-        </div>
-        <div class="bg-white border border-outline-variant p-3 rounded-xl flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center font-bold text-secondary text-[13px] flex-shrink-0">PH</div>
-          <div class="flex-1">
-            <p class="font-body-sm font-bold text-[13px]">Pak Hendra</p>
-            <p class="font-label-md text-on-surface-variant text-[10px]">31 transaksi · Total Rp 780rb</p>
-          </div>
-          <span class="bg-surface-container-high text-on-surface-variant font-label-md text-[9px] px-2 py-0.5 rounded-full font-bold">Reguler</span>
-        </div>
-        <div class="bg-white border border-outline-variant p-3 rounded-xl flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-primary text-[13px] flex-shrink-0">SR</div>
-          <div class="flex-1">
-            <p class="font-body-sm font-bold text-[13px]">Siti Rahma</p>
-            <p class="font-label-md text-on-surface-variant text-[10px]">8 transaksi · Total Rp 145rb</p>
-          </div>
-          <span class="bg-surface-container-high text-on-surface-variant font-label-md text-[9px] px-2 py-0.5 rounded-full font-bold">Baru</span>
-        </div>
-      </div>
-      <button onclick="showToast('Tambah pelanggan baru...');document.getElementById('crm-sheet').classList.remove('show')" class="w-full mt-4 py-3 rounded-xl bg-primary text-white font-bold font-body-sm active:scale-95">+ Tambah Pelanggan</button>
+
     </div>
+
+    <!-- Placeholder before scan -->
+    <div id="scan-placeholder" class="flex flex-col items-center justify-center py-8 gap-3">
+      <div class="w-16 h-16 rounded-2xl bg-surface-container-high flex items-center justify-center">
+        <span class="material-symbols-outlined text-primary text-[36px]">qr_code_2</span>
+      </div>
+      <p class="font-title-md text-primary font-bold text-center">Siap Scan Barcode</p>
+      <p class="font-body-sm text-on-surface-variant text-center text-[13px]">Arahkan kamera ke barcode produk<br>atau tekan <b>Demo Scan ▶</b> untuk coba</p>
+      <!-- Manual SKU input -->
+      <div class="w-full mt-2 relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">edit</span>
+        <input id="manual-sku" type="text" placeholder="Ketik SKU manual (cth: SM-2024-003)" class="w-full pl-9 pr-12 py-3 bg-white border border-outline-variant rounded-xl font-label-md text-[12px] focus:outline-none focus:ring-2 focus:ring-secondary-container"/>
+        <button onclick="manualLookup()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white px-3 py-1.5 rounded-lg font-label-md text-[11px] font-bold active:scale-90">Cek</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -456,28 +458,13 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       <div class="w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center">
         <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings:'FILL' 1">inventory_2</span>
       </div>
-      <div>
-        <h3 id="d-name" class="font-title-md text-primary font-bold">-</h3>
-        <p id="d-sku" class="font-label-md text-outline text-[11px]">-</p>
-      </div>
+      <div><h3 id="d-name" class="font-title-md text-primary font-bold">-</h3><p id="d-sku" class="font-label-md text-outline text-[11px]">-</p></div>
     </div>
     <div class="space-y-3 mb-5">
-      <div class="flex justify-between py-3 border-b border-outline-variant">
-        <span class="font-body-sm text-on-surface-variant">Jumlah Stok</span>
-        <span id="d-qty" class="font-body-sm font-bold text-primary">-</span>
-      </div>
-      <div class="flex justify-between py-3 border-b border-outline-variant">
-        <span class="font-body-sm text-on-surface-variant">Status</span>
-        <span id="d-status" class="font-body-sm font-bold text-on-tertiary-container">-</span>
-      </div>
-      <div class="flex justify-between py-3 border-b border-outline-variant">
-        <span class="font-body-sm text-on-surface-variant">Kategori</span>
-        <span id="d-cat" class="font-body-sm font-bold text-on-surface">-</span>
-      </div>
-      <div class="flex justify-between py-3">
-        <span class="font-body-sm text-on-surface-variant">Harga Jual</span>
-        <span id="d-price" class="font-body-sm font-bold text-on-surface">-</span>
-      </div>
+      <div class="flex justify-between py-3 border-b border-outline-variant"><span class="font-body-sm text-on-surface-variant">Jumlah Stok</span><span id="d-qty" class="font-body-sm font-bold text-primary">-</span></div>
+      <div class="flex justify-between py-3 border-b border-outline-variant"><span class="font-body-sm text-on-surface-variant">Status</span><span id="d-status" class="font-body-sm font-bold text-on-tertiary-container">-</span></div>
+      <div class="flex justify-between py-3 border-b border-outline-variant"><span class="font-body-sm text-on-surface-variant">Kategori</span><span id="d-cat" class="font-body-sm font-bold">-</span></div>
+      <div class="flex justify-between py-3"><span class="font-body-sm text-on-surface-variant">Harga Jual</span><span id="d-price" class="font-body-sm font-bold">-</span></div>
     </div>
     <div class="grid grid-cols-2 gap-3">
       <button onclick="closeDetail()" class="py-3 rounded-xl bg-surface-container-high text-primary font-bold font-body-sm active:scale-95">✏ Edit Stok</button>
@@ -486,121 +473,433 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   </div>
 </div>
 
-<!-- Scan Overlay -->
-<div id="scan-overlay">
-  <header class="flex items-center justify-between px-4 h-14 border-b border-outline-variant bg-surface flex-shrink-0">
-    <button onclick="document.getElementById('scan-overlay').classList.remove('show')" class="material-symbols-outlined text-primary p-1">arrow_back</button>
-    <h1 class="font-title-md text-primary">Scan Barcode / QR</h1>
-    <button class="material-symbols-outlined text-primary p-1">flashlight_on</button>
-  </header>
-  <div class="flex-1 flex flex-col p-4 gap-5 overflow-y-auto">
-    <div class="aspect-square w-full bg-black rounded-2xl overflow-hidden relative flex items-center justify-center">
-      <div class="absolute inset-0 bg-[radial-gradient(circle,transparent_55%,rgba(0,0,0,0.7)_100%)]"></div>
-      <div class="w-52 h-52 border-2 border-transparent relative">
-        <div class="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-secondary-container rounded-tl-lg"></div>
-        <div class="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-secondary-container rounded-tr-lg"></div>
-        <div class="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-secondary-container rounded-bl-lg"></div>
-        <div class="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-secondary-container rounded-br-lg"></div>
-        <div class="vf-scan-line absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-secondary-container to-transparent"></div>
+<!-- CRM Sheet -->
+<div id="crm-sheet">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="document.getElementById('crm-sheet').classList.remove('show')"></div>
+  <div class="absolute bottom-0 left-0 right-0 bg-surface rounded-t-3xl z-10 max-h-[85vh] overflow-y-auto">
+    <div class="p-5">
+      <div class="w-10 h-1.5 bg-outline-variant rounded-full mx-auto mb-4"></div>
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-primary-container text-[24px]" style="font-variation-settings:'FILL' 1">people</span>
+        </div>
+        <div><h3 class="font-title-md text-primary font-bold">Data Pelanggan</h3><p class="font-label-md text-on-surface-variant text-[11px]">124 pelanggan aktif · Juni 2026</p></div>
       </div>
-      <p class="absolute bottom-4 text-white font-body-sm bg-black/60 px-3 py-1 rounded-full text-[12px]">Arahkan ke barcode produk</p>
+      <div class="grid grid-cols-3 gap-2 mb-4">
+        <div class="bg-surface-container-high p-3 rounded-xl text-center"><p class="font-title-md text-primary font-extrabold text-[18px]">124</p><p class="font-label-md text-on-surface-variant text-[10px]">Total</p></div>
+        <div class="bg-tertiary-fixed/30 p-3 rounded-xl text-center"><p class="font-title-md text-on-tertiary-container font-extrabold text-[18px]">48</p><p class="font-label-md text-on-surface-variant text-[10px]">Aktif bulan ini</p></div>
+        <div class="bg-secondary-fixed p-3 rounded-xl text-center"><p class="font-title-md text-secondary font-extrabold text-[18px]">12</p><p class="font-label-md text-on-surface-variant text-[10px]">Pelanggan baru</p></div>
+      </div>
+      <div class="space-y-2">
+        <div class="bg-white border border-outline-variant p-3 rounded-xl flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center font-bold text-on-primary-container text-[13px] flex-shrink-0">BA</div>
+          <div class="flex-1"><p class="font-body-sm font-bold text-[13px]">Bu Ani</p><p class="font-label-md text-on-surface-variant text-[10px]">47 transaksi · Total Rp 1,2 Jt</p></div>
+          <span class="bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-[9px] px-2 py-0.5 rounded-full font-bold">VIP</span>
+        </div>
+        <div class="bg-white border border-outline-variant p-3 rounded-xl flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center font-bold text-secondary text-[13px] flex-shrink-0">PH</div>
+          <div class="flex-1"><p class="font-body-sm font-bold text-[13px]">Pak Hendra</p><p class="font-label-md text-on-surface-variant text-[10px]">31 transaksi · Total Rp 780rb</p></div>
+          <span class="bg-surface-container-high text-on-surface-variant font-label-md text-[9px] px-2 py-0.5 rounded-full font-bold">Reguler</span>
+        </div>
+      </div>
+      <button class="w-full mt-4 py-3 rounded-xl bg-primary text-white font-bold font-body-sm active:scale-95">+ Tambah Pelanggan</button>
     </div>
-    <div class="grid grid-cols-2 gap-2 bg-surface-container p-1 rounded-xl">
-      <button id="btn-masuk" onclick="setScanType('masuk')" class="py-3 rounded-xl bg-surface text-primary font-bold text-[13px] shadow-sm active:scale-95">↑ Stok Masuk</button>
-      <button id="btn-keluar" onclick="setScanType('keluar')" class="py-3 rounded-xl text-on-surface-variant text-[13px] active:scale-95">↓ Stok Keluar</button>
-    </div>
-    <div>
-      <p class="font-label-md text-on-surface-variant text-[11px] uppercase tracking-wider mb-2">Jumlah Unit</p>
-      <div class="flex items-center gap-3 bg-surface-container-lowest border border-outline-variant rounded-xl p-3">
-        <button onclick="changeQty(-1)" class="w-11 h-11 rounded-xl bg-surface-container flex items-center justify-center text-primary font-bold text-[20px] active:scale-90">−</button>
-        <input id="qty" type="number" value="1" min="1" class="flex-1 text-center bg-transparent font-headline-lg-mobile text-primary font-extrabold border-none outline-none"/>
-        <button onclick="changeQty(1)" class="w-11 h-11 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary font-bold text-[20px] active:scale-90">+</button>
+  </div>
+</div>
+
+<!-- Tambah Modal -->
+<div id="tambah-modal" class="flex-col bg-black/60 backdrop-blur-sm">
+  <div class="mt-auto bg-surface rounded-t-3xl w-full max-h-[92vh] overflow-y-auto slide-up">
+    <div class="sticky top-0 bg-surface rounded-t-3xl z-10 border-b border-outline-variant">
+      <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-outline-variant rounded-full"></div></div>
+      <div class="flex items-center justify-between px-5 pb-4">
+        <div><h2 class="font-title-md text-primary text-[17px] font-bold">Tambah Produk Baru</h2><p class="font-label-md text-on-surface-variant text-[11px]">Isi semua informasi produk</p></div>
+        <button onclick="document.getElementById('tambah-modal').classList.remove('show')" class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center active:scale-90">
+          <span class="material-symbols-outlined text-on-surface text-[20px]">close</span>
+        </button>
       </div>
     </div>
-    <div class="bg-tertiary-fixed/30 p-3 rounded-xl flex gap-3">
-      <span class="material-symbols-outlined text-on-tertiary-fixed-variant text-[18px]" style="font-variation-settings:'FILL' 1">verified</span>
-      <p class="font-body-sm text-on-tertiary-fixed-variant text-[12px]">Transaksi akan dicatat otomatis ke log pergerakan stok.</p>
+    <div class="px-5 py-4 space-y-4">
+      <div>
+        <label class="form-label">Nama Produk *</label>
+        <input id="inp-nama" class="form-input" type="text" placeholder="cth: Indomie Goreng Spesial"/>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="form-label">Kode SKU</label><input id="inp-sku" class="form-input" type="text" placeholder="SM-2024-XXX"/></div>
+        <div><label class="form-label">Barcode</label><input id="inp-barcode" class="form-input" type="text" placeholder="8991234567890"/></div>
+      </div>
+      <div><label class="form-label">Kategori *</label>
+        <select id="inp-kategori" class="form-input">
+          <option value="">Pilih kategori...</option>
+          <option value="makanan">Makanan & Snack</option><option value="minuman">Minuman</option>
+          <option value="sembako">Sembako</option><option value="kebersihan">Kebersihan</option><option value="lainnya">Lainnya</option>
+        </select>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="form-label">Harga Beli (HPP)</label><input id="inp-harga-beli" class="form-input" type="number" placeholder="2.500" oninput="hitungMargin()"/></div>
+        <div><label class="form-label">Harga Jual *</label><input id="inp-harga-jual" class="form-input" type="number" placeholder="3.500" oninput="hitungMargin()"/></div>
+      </div>
+      <div id="margin-box" class="hidden bg-surface-container-high p-3 rounded-xl flex justify-between items-center">
+        <span class="font-label-md text-on-surface-variant text-[11px]">Estimasi Margin</span>
+        <span id="margin-val" class="font-label-md font-bold text-on-tertiary-container text-[13px]">0%</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="form-label">Stok Awal *</label><input id="inp-stok" class="form-input" type="number" placeholder="50" min="0"/></div>
+        <div><label class="form-label">Minimum Alert</label><input id="inp-min-stok" class="form-input" type="number" placeholder="10" min="1"/></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3 pb-4">
+        <button onclick="document.getElementById('tambah-modal').classList.remove('show')" class="py-3 rounded-xl bg-surface-container-high text-primary font-bold font-body-sm active:scale-95">Batal</button>
+        <button onclick="simpanProduk()" class="py-3 rounded-xl bg-primary text-white font-bold font-body-sm active:scale-95 shadow-md">Simpan Produk ✓</button>
+      </div>
     </div>
-    <button onclick="showToast('Stok berhasil diperbarui!');document.getElementById('scan-overlay').classList.remove('show')" class="w-full bg-primary text-on-primary py-4 rounded-xl font-title-md active:scale-95 shadow-lg">Konfirmasi Stok</button>
   </div>
 </div>
 
 <!-- Bottom Nav -->
 <nav class="fixed bottom-0 w-full z-50 shadow-lg bg-surface border-t border-outline-variant flex justify-around items-center h-16 px-2">
-  <a href="KEMASKU.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90">
-    <span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-md text-[10px]">Home</span>
-  </a>
-  <a href="KEMASKASIR.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90">
-    <span class="material-symbols-outlined text-[20px]">point_of_sale</span><span class="font-label-md text-[10px]">Cashier</span>
-  </a>
-  <a href="STOKTOKO.html" class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary rounded-xl px-4 py-1 active:scale-90 shadow-sm">
-    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1">inventory_2</span><span class="font-label-md text-[10px] font-bold">Stock</span>
-  </a>
-  <a href="KEMASMARKET.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90">
-    <span class="material-symbols-outlined text-[20px]">storefront</span><span class="font-label-md text-[10px]">Market</span>
-  </a>
-  <a href="KEMASUANG.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90">
-    <span class="material-symbols-outlined text-[20px]">payments</span><span class="font-label-md text-[10px]">Finance</span>
-  </a>
+  <a href="KEMASKU.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-md text-[10px]">Home</span></a>
+  <a href="KEMASKASIR.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90"><span class="material-symbols-outlined text-[20px]">point_of_sale</span><span class="font-label-md text-[10px]">Cashier</span></a>
+  <a href="STOKTOKO.html" class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary rounded-xl px-4 py-1 active:scale-90 shadow-sm"><span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1">inventory_2</span><span class="font-label-md text-[10px] font-bold">Stock</span></a>
+  <a href="KEMASMARKET.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90"><span class="material-symbols-outlined text-[20px]">storefront</span><span class="font-label-md text-[10px]">Market</span></a>
+  <a href="KEMASUANG.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90"><span class="material-symbols-outlined text-[20px]">payments</span><span class="font-label-md text-[10px]">Finance</span></a>
 </nav>
 
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
 <script>
-function filterStock(q){
-  document.querySelectorAll('#stock-list > div[data-name]').forEach(el=>{
-    el.style.display=el.dataset.name.includes(q.toLowerCase())?'flex':'none';
+// ── PRODUCT DATABASE (mock) ──
+const PRODUCTS = {
+  'SM-2024-001': {
+    name:'Good Time Cokelat', sku:'SM-2024-001', cat:'Makanan & Snack',
+    harga:'Rp 3.200', supplier:'Mayora', stok:35, min:10,
+    img:'https://github.com/Mi24-ai/KEMASTOKO/blob/main/Good%20Time.jpg?raw=true',
+    history:[
+      {type:'masuk', qty:35, waktu:'10 Jun, 10:30', label:'+35 Stok Masuk'},
+      {type:'keluar', qty:3, waktu:'9 Jun, 15:12', label:'-3 Terjual'},
+      {type:'masuk', qty:10, waktu:'8 Jun, 09:00', label:'+10 Stok Masuk'},
+    ]
+  },
+  'SM-2024-042': {
+    name:'Oreo Original', sku:'SM-2024-042', cat:'Makanan & Snack',
+    harga:'Rp 4.500', supplier:'Nabisco', stok:12, min:15,
+    img:'https://images.tokopedia.net/img/cache/700/VqbcmM/2021/1/27/c006d945-1bf4-4516-8863-d31028ecc2f8.jpg.webp',
+    history:[
+      {type:'keluar', qty:8, waktu:'10 Jun, 14:00', label:'-8 Terjual'},
+      {type:'masuk', qty:20, waktu:'7 Jun, 08:00', label:'+20 Stok Masuk'},
+    ]
+  },
+  'SM-2024-003': {
+    name:'Indomie Goreng', sku:'SM-2024-003', cat:'Makanan & Snack',
+    harga:'Rp 3.100', supplier:'Indofood', stok:120, min:20,
+    img:'https://github.com/Mi24-ai/KEMASTOKO/blob/main/indomie.jpg?raw=true',
+    history:[
+      {type:'masuk', qty:50, waktu:'10 Jun, 08:00', label:'+50 Stok Masuk'},
+      {type:'keluar', qty:12, waktu:'9 Jun, 17:00', label:'-12 Terjual'},
+      {type:'keluar', qty:8, waktu:'9 Jun, 12:30', label:'-8 Terjual'},
+    ]
+  },
+  'SM-2024-010': {
+    name:'Aqua 600ml', sku:'SM-2024-010', cat:'Minuman',
+    harga:'Rp 3.500', supplier:'Danone', stok:42, min:20,
+    img:'https://github.com/Mi24-ai/KEMASTOKO/blob/main/aqua.jpg?raw=true',
+    history:[
+      {type:'keluar', qty:18, waktu:'10 Jun, 16:00', label:'-18 Terjual'},
+      {type:'masuk', qty:60, waktu:'8 Jun, 07:30', label:'+60 Stok Masuk'},
+    ]
+  },
+  'SM-2024-055': {
+    name:'Japota Rumput Laut', sku:'SM-2024-055', cat:'Makanan & Snack',
+    harga:'Rp 5.500', supplier:'Garudafood', stok:18, min:10,
+    img:'https://github.com/Mi24-ai/KEMASTOKO/blob/main/japota.jpg?raw=true',
+    history:[
+      {type:'masuk', qty:10, waktu:'Kemarin', label:'+10 Stok Masuk'},
+      {type:'keluar', qty:4, waktu:'8 Jun, 11:00', label:'-4 Terjual'},
+    ]
+  },
+};
+
+// Demo cycle
+const DEMO_SKUS = Object.keys(PRODUCTS);
+let demoIdx = 0;
+
+let currentMode = 'cek';
+let scannedProduct = null;
+
+// ── SCANNER OPEN/CLOSE ──
+function openScanner(mode) {
+  document.getElementById('scan-overlay').classList.add('show');
+  setMode(mode || 'cek');
+  resetScanResult();
+}
+function closeScan() {
+  document.getElementById('scan-overlay').classList.remove('show');
+}
+
+// ── MODE ──
+function setMode(mode) {
+  currentMode = mode;
+  ['cek','masuk','keluar'].forEach(m => {
+    const btn = document.getElementById('mode-'+m);
+    btn.className = 'scan-mode-btn flex-1 py-2.5 rounded-xl font-label-md text-[12px] font-bold flex items-center justify-center gap-1.5';
+    if (m === mode) {
+      if (mode==='cek') btn.classList.add('active-check');
+      else if (mode==='masuk') btn.classList.add('active-in');
+      else btn.classList.add('active-out');
+    }
+  });
+  // Update hint
+  const hints = {cek:'Scan untuk cek sisa stok', masuk:'Scan produk yang masuk', keluar:'Scan produk yang keluar'};
+  document.getElementById('scan-hint').textContent = hints[mode];
+  // If product already scanned, update action UI
+  if (scannedProduct) showResult(scannedProduct, false);
+}
+function setModeFromResult(mode) {
+  setMode(mode);
+  document.getElementById('res-aksi-cek').classList.add('hidden');
+  document.getElementById('res-aksi-qty').classList.remove('hidden');
+  const isIn = mode === 'masuk';
+  document.getElementById('qty-mode-label').textContent = isIn ? '↑ Jumlah Unit MASUK' : '↓ Jumlah Unit KELUAR';
+  const btn = document.getElementById('confirm-qty-btn');
+  btn.className = 'w-full py-4 rounded-xl font-title-md text-white font-bold active:scale-95 shadow-md ' +
+    (isIn ? 'bg-on-tertiary-fixed-variant' : 'bg-error');
+  btn.textContent = isIn ? '✓ Konfirmasi Stok Masuk' : '✓ Konfirmasi Stok Keluar';
+}
+
+// ── SCAN SIMULATE ──
+function simulateScan() {
+  const sku = DEMO_SKUS[demoIdx % DEMO_SKUS.length];
+  demoIdx++;
+  lookupProduct(sku);
+}
+function manualLookup() {
+  const val = document.getElementById('manual-sku').value.trim().toUpperCase();
+  lookupProduct(val);
+}
+function lookupProduct(sku) {
+  const p = PRODUCTS[sku];
+  if (!p) { showToast('⚠ Produk tidak ditemukan: ' + sku); return; }
+  scannedProduct = p;
+  showResult(p, true);
+}
+
+// ── SHOW RESULT ──
+function showResult(p, animate) {
+  // Hide placeholder
+  document.getElementById('scan-placeholder').style.display = 'none';
+  const panel = document.getElementById('scan-result');
+  panel.classList.add('show');
+  if (animate) { panel.classList.remove('result-in'); void panel.offsetWidth; panel.classList.add('result-in'); }
+
+  // Populate
+  document.getElementById('res-img').src = p.img;
+  document.getElementById('res-name').textContent = p.name;
+  document.getElementById('res-sku').textContent = 'SKU: ' + p.sku;
+  document.getElementById('res-cat').textContent = p.cat;
+  document.getElementById('res-harga').textContent = p.harga + '/pcs';
+  document.getElementById('res-supplier').textContent = '· ' + p.supplier;
+
+  // Stock numbers
+  const stok = p.stok, min = p.min;
+  const maxStok = Math.max(stok, min * 5, 50);
+  const pct = Math.round((stok / maxStok) * 100);
+  document.getElementById('res-qty').textContent = stok;
+  document.getElementById('res-min').textContent = min;
+  document.getElementById('res-pct').textContent = Math.round((stok/maxStok)*100) + '%';
+
+  // Bar
+  const bar = document.getElementById('res-bar');
+  const ring = document.getElementById('res-ring');
+  const circumference = 176;
+  const offset = circumference - (pct / 100) * circumference;
+
+  setTimeout(() => {
+    bar.style.width = pct + '%';
+    ring.style.strokeDashoffset = offset;
+  }, 50);
+
+  // Color based on status
+  const isCrit = stok <= min;
+  const isLow  = stok <= min * 2 && stok > min;
+  const color = isCrit ? '#ba1a1a' : isLow ? '#a04100' : '#1db262';
+  bar.style.background = color;
+  ring.style.stroke = color;
+
+  // Status
+  const wrap = document.getElementById('res-status-wrap');
+  const icon = document.getElementById('res-status-icon');
+  const text = document.getElementById('res-status-text');
+  const sub  = document.getElementById('res-status-sub');
+  const badge= document.getElementById('res-status-badge');
+  if (isCrit) {
+    wrap.className = 'mt-3 px-4 py-2.5 rounded-xl flex items-center gap-2 bg-error-container';
+    icon.textContent = 'warning'; icon.style.color = '#ba1a1a';
+    text.textContent = 'Stok Kritis!'; text.style.color = '#ba1a1a';
+    sub.textContent = 'Di bawah batas minimum — segera restock'; sub.style.color = '#ba1a1a';
+    badge.textContent = 'KRITIS'; badge.className = 'font-label-md text-[10px] px-3 py-1 rounded-full font-bold bg-error text-on-error';
+  } else if (isLow) {
+    wrap.className = 'mt-3 px-4 py-2.5 rounded-xl flex items-center gap-2 bg-secondary-fixed';
+    icon.textContent = 'info'; icon.style.color = '#a04100';
+    text.textContent = 'Stok Mulai Menipis'; text.style.color = '#a04100';
+    sub.textContent = 'Pertimbangkan restock dalam waktu dekat'; sub.style.color = '#a04100';
+    badge.textContent = 'RENDAH'; badge.className = 'font-label-md text-[10px] px-3 py-1 rounded-full font-bold bg-secondary-fixed-dim text-secondary';
+  } else {
+    wrap.className = 'mt-3 px-4 py-2.5 rounded-xl flex items-center gap-2 bg-tertiary-fixed/30';
+    icon.textContent = 'check_circle'; icon.style.color = '#1db262';
+    text.textContent = 'Stok Aman'; text.style.color = '#005228';
+    sub.textContent = stok + ' unit tersedia · batas minimum ' + min + ' unit'; sub.style.color = '#43474f';
+    badge.textContent = 'AMAN'; badge.className = 'font-label-md text-[10px] px-3 py-1 rounded-full font-bold bg-tertiary-fixed text-on-tertiary-fixed';
+  }
+
+  // History
+  const hist = document.getElementById('res-history');
+  hist.innerHTML = p.history.map(h => `
+    <div class="flex items-center gap-2">
+      <div class="w-6 h-6 rounded-lg flex-shrink-0 flex items-center justify-center ${h.type==='masuk'?'bg-tertiary-fixed/40':'bg-error-container'}">
+        <span class="material-symbols-outlined text-[13px] ${h.type==='masuk'?'text-on-tertiary-fixed-variant':'text-error'}" style="font-variation-settings:'FILL' 1">${h.type==='masuk'?'add_circle':'remove_circle'}</span>
+      </div>
+      <span class="font-body-sm text-on-surface text-[12px] flex-1">${h.label}</span>
+      <span class="hist-chip">${h.waktu}</span>
+    </div>`).join('');
+
+  // Action panels
+  if (currentMode === 'cek') {
+    document.getElementById('res-aksi-cek').classList.remove('hidden');
+    document.getElementById('res-aksi-qty').classList.add('hidden');
+  } else {
+    setModeFromResult(currentMode);
+  }
+}
+
+function resetScanResult() {
+  scannedProduct = null;
+  document.getElementById('scan-result').classList.remove('show');
+  document.getElementById('scan-placeholder').style.display = '';
+  document.getElementById('manual-sku').value = '';
+}
+
+// ── QTY CONFIRM ──
+function changeScanQty(d) {
+  const i = document.getElementById('scan-qty');
+  i.value = Math.max(1, parseInt(i.value) + d);
+}
+function confirmQty() {
+  if (!scannedProduct) return;
+  const qty = parseInt(document.getElementById('scan-qty').value) || 1;
+  const isIn = currentMode === 'masuk';
+  const now = new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'});
+
+  // Update mock stok
+  if (isIn) scannedProduct.stok += qty;
+  else scannedProduct.stok = Math.max(0, scannedProduct.stok - qty);
+
+  // Add to history
+  scannedProduct.history.unshift({
+    type: isIn ? 'masuk' : 'keluar',
+    qty,
+    waktu: 'Baru saja',
+    label: (isIn ? '+' : '-') + qty + ' ' + (isIn ? 'Stok Masuk' : 'Terjual')
+  });
+
+  // Add to log
+  addToLog(scannedProduct.name, qty, isIn, now);
+
+  const msg = isIn
+    ? `✅ +${qty} ${scannedProduct.name} — Stok sekarang: ${scannedProduct.stok} unit`
+    : `✅ -${qty} ${scannedProduct.name} — Sisa stok: ${scannedProduct.stok} unit`;
+  showToast(msg);
+
+  // Refresh result
+  setMode('cek');
+  showResult(scannedProduct, true);
+  document.getElementById('scan-qty').value = 1;
+}
+
+function addToLog(name, qty, isIn, time) {
+  const lc = document.getElementById('log-container');
+  const div = document.createElement('div');
+  div.className = 'flex items-center gap-3 pt-3 border-t border-outline-variant';
+  div.innerHTML = `
+    <div class="w-9 h-9 rounded-xl ${isIn?'bg-tertiary-fixed':'bg-error-container'} flex items-center justify-center flex-shrink-0">
+      <span class="material-symbols-outlined ${isIn?'text-on-tertiary-fixed-variant':'text-error'} text-[18px]" style="font-variation-settings:'FILL' 1">${isIn?'add_circle':'remove_circle'}</span>
+    </div>
+    <div class="flex-1">
+      <div class="flex justify-between"><p class="font-body-sm font-semibold">${isIn?'Stok Masuk':'Stok Keluar (Jual)'}</p><p class="font-label-md text-outline text-[11px]">${time}</p></div>
+      <p class="font-body-sm text-on-surface-variant text-[12px]">${isIn?'+':'-'}${qty} ${name}</p>
+    </div>`;
+  lc.insertBefore(div, lc.firstChild);
+}
+
+function closeScanToDetail() {
+  if (!scannedProduct) return;
+  closeScan();
+  const p = scannedProduct;
+  openDetail(p.name, p.sku, p.stok, p.stok <= p.min ? 'kritis' : 'tersedia', p.cat, p.harga);
+}
+
+// ── MAIN STOCK FUNCTIONS ──
+function filterStock(q) {
+  document.querySelectorAll('#stock-list > div[data-name]').forEach(el => {
+    el.style.display = el.dataset.name.includes(q.toLowerCase()) ? 'flex' : 'none';
   });
 }
-function setTab(el,cat){
-  document.querySelectorAll('.tab-item').forEach(t=>{t.classList.remove('tab-active');t.classList.add('bg-surface-container-high','text-on-surface-variant')});
-  el.classList.add('tab-active');el.classList.remove('bg-surface-container-high','text-on-surface-variant');
-  document.querySelectorAll('#stock-list > div[data-name]').forEach(item=>{
-    item.style.display=(cat==='semua'||cat==='tersedia'||item.dataset.cat===cat)?'flex':'none';
+function setTab(el, cat) {
+  document.querySelectorAll('.tab-item').forEach(t => {
+    t.classList.remove('tab-active');
+    t.classList.add('bg-surface-container-high','text-on-surface-variant');
+  });
+  el.classList.add('tab-active');
+  el.classList.remove('bg-surface-container-high','text-on-surface-variant');
+  document.querySelectorAll('#stock-list > div[data-name]').forEach(item => {
+    item.style.display = (cat==='semua'||cat==='tersedia'||item.dataset.cat===cat) ? 'flex' : 'none';
   });
 }
-function openDetail(name,sku,qty,status,cat,price){
-  document.getElementById('d-name').textContent=name;
-  document.getElementById('d-sku').textContent='SKU: '+sku;
-  document.getElementById('d-qty').textContent=qty+' Unit';
-  document.getElementById('d-status').textContent=status==='tersedia'?'Tersedia ✓':'Kritis ⚠';
-  document.getElementById('d-cat').textContent=cat;
-  document.getElementById('d-price').textContent=price+' / pcs';
+function openDetail(name,sku,qty,status,cat,price) {
+  document.getElementById('d-name').textContent = name;
+  document.getElementById('d-sku').textContent = 'SKU: '+sku;
+  document.getElementById('d-qty').textContent = qty+' Unit';
+  document.getElementById('d-status').textContent = status==='tersedia'?'Tersedia ✓':'Kritis ⚠';
+  document.getElementById('d-cat').textContent = cat;
+  document.getElementById('d-price').textContent = price+' / pcs';
   document.getElementById('detail-sheet').classList.add('show');
 }
-function closeDetail(){document.getElementById('detail-sheet').classList.remove('show')}
-function changeQty(d){const i=document.getElementById('qty');i.value=Math.max(1,parseInt(i.value)+d)}
-function setScanType(t){
-  const bm=document.getElementById('btn-masuk'),bk=document.getElementById('btn-keluar');
-  if(t==='masuk'){bm.className='py-3 rounded-xl bg-surface text-primary font-bold text-[13px] shadow-sm active:scale-95';bk.className='py-3 rounded-xl text-on-surface-variant text-[13px] active:scale-95'}
-  else{bk.className='py-3 rounded-xl bg-surface text-error font-bold text-[13px] shadow-sm active:scale-95';bm.className='py-3 rounded-xl text-on-surface-variant text-[13px] active:scale-95'}
-}
-function hitungMargin(){
-  const beli=parseFloat(document.getElementById('inp-harga-beli').value)||0;
-  const jual=parseFloat(document.getElementById('inp-harga-jual').value)||0;
-  const box=document.getElementById('margin-box');
-  if(beli>0&&jual>0){
-    const margin=((jual-beli)/jual*100).toFixed(1);
-    document.getElementById('margin-val').textContent=margin+'%';
-    document.getElementById('margin-val').style.color=margin>=20?'#1db262':margin>=10?'#a04100':'#ba1a1a';
+function closeDetail() { document.getElementById('detail-sheet').classList.remove('show'); }
+function hitungMargin() {
+  const beli = parseFloat(document.getElementById('inp-harga-beli').value)||0;
+  const jual = parseFloat(document.getElementById('inp-harga-jual').value)||0;
+  const box = document.getElementById('margin-box');
+  if (beli>0 && jual>0) {
+    const m = ((jual-beli)/jual*100).toFixed(1);
+    document.getElementById('margin-val').textContent = m+'%';
+    document.getElementById('margin-val').style.color = m>=20?'#1db262':m>=10?'#a04100':'#ba1a1a';
     box.classList.remove('hidden');
   } else { box.classList.add('hidden'); }
 }
-function simpanProduk(){
-  const nama=document.getElementById('inp-nama').value.trim();
-  const stok=document.getElementById('inp-stok').value;
-  const hargaJual=document.getElementById('inp-harga-jual').value;
-  const sku=document.getElementById('inp-sku').value.trim()||'SM-2024-'+Math.floor(Math.random()*999+100);
-  const kategori=document.getElementById('inp-kategori').value||'lainnya';
-  if(!nama){showToast('⚠ Nama produk wajib diisi!');return;}
-  if(!hargaJual){showToast('⚠ Harga jual wajib diisi!');return;}
-  const harga=parseInt(hargaJual).toLocaleString('id-ID');
-  const jumlah=parseInt(stok)||0;
-  // Tambahkan ke list
-  const container=document.getElementById('new-products-container');
-  const div=document.createElement('div');
-  div.className='card p-4 rounded-xl flex gap-3 items-center';
-  div.dataset.name=nama.toLowerCase();
-  div.dataset.cat=kategori;
-  div.innerHTML=`
+function simpanProduk() {
+  const nama = document.getElementById('inp-nama').value.trim();
+  const stok = document.getElementById('inp-stok').value;
+  const hargaJual = document.getElementById('inp-harga-jual').value;
+  const sku = document.getElementById('inp-sku').value.trim() || 'SM-2024-'+Math.floor(Math.random()*900+100);
+  const kategori = document.getElementById('inp-kategori').value || 'lainnya';
+  if (!nama) { showToast('⚠ Nama produk wajib diisi!'); return; }
+  if (!hargaJual) { showToast('⚠ Harga jual wajib diisi!'); return; }
+  const jumlah = parseInt(stok)||0;
+  const harga = 'Rp '+parseInt(hargaJual).toLocaleString('id-ID');
+
+  // Add to PRODUCTS db so scanner can find it
+  PRODUCTS[sku] = {
+    name: nama, sku, cat: kategori, harga, supplier: 'Supplier Baru',
+    stok: jumlah, min: parseInt(document.getElementById('inp-min-stok').value)||5,
+    img:'', history:[]
+  };
+
+  const container = document.getElementById('new-products-container');
+  const div = document.createElement('div');
+  div.className = 'card p-4 rounded-xl flex gap-3 items-center';
+  div.dataset.name = nama.toLowerCase();
+  div.dataset.cat = kategori;
+  div.onclick = () => openDetail(nama, sku, jumlah, 'tersedia', kategori, harga);
+  div.innerHTML = `
     <div class="w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center flex-shrink-0">
       <span class="material-symbols-outlined text-primary text-[24px]" style="font-variation-settings:'FILL' 1">inventory_2</span>
     </div>
@@ -617,37 +916,24 @@ function simpanProduk(){
       <p class="font-label-md text-outline text-[10px] uppercase">Unit</p>
     </div>`;
   container.appendChild(div);
-  // Tambah ke log
-  const logContainer=document.getElementById('log-container');
-  const logDiv=document.createElement('div');
-  logDiv.className='flex items-center gap-3 pt-3 border-t border-outline-variant';
-  logDiv.innerHTML=`
-    <div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center flex-shrink-0">
-      <span class="material-symbols-outlined text-on-primary-container text-[18px]" style="font-variation-settings:'FILL' 1">add_box</span>
-    </div>
-    <div class="flex-1">
-      <div class="flex justify-between"><p class="font-body-sm font-semibold">Produk Baru Ditambahkan</p><p class="font-label-md text-outline text-[11px]">Baru saja</p></div>
-      <p class="font-body-sm text-on-surface-variant text-[12px]">${nama} · ${jumlah} unit · Rp ${harga}</p>
-    </div>`;
-  logContainer.appendChild(logDiv);
-  // Reset & tutup
-  ['inp-nama','inp-sku','inp-barcode','inp-harga-beli','inp-harga-jual','inp-stok','inp-min-stok','inp-ket'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('inp-kategori').value='';
+  addToLog(nama, jumlah, true, 'Baru saja');
+
+  ['inp-nama','inp-sku','inp-barcode','inp-harga-beli','inp-harga-jual','inp-stok','inp-min-stok'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('inp-kategori').value = '';
   document.getElementById('margin-box').classList.add('hidden');
   document.getElementById('tambah-modal').classList.remove('show');
   showToast('✅ Produk '+nama+' berhasil ditambahkan!');
 }
-function showToast(msg){
-  const existing=document.querySelector('.success-toast');
-  if(existing)existing.remove();
-  const t=document.createElement('div');
-  t.className='success-toast';
-  t.textContent=msg;
+function showToast(msg) {
+  const existing = document.querySelector('.success-toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'success-toast';
+  t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(()=>t.remove(),3000);
+  setTimeout(() => t.remove(), 3500);
 }
-// Close modals on backdrop tap
-document.getElementById('tambah-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show')});
+document.getElementById('tambah-modal').addEventListener('click', function(e){ if(e.target===this) this.classList.remove('show'); });
 </script>
 </body>
 </html>
