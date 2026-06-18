@@ -21,59 +21,67 @@ body{background-color:#f8f9ff;color:#0b1c30;-webkit-tap-highlight-color:transpar
 .hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
 .tab-active{background:#001e40;color:white}
 .tab-item{transition:all .15s}
-.nav-active{background:#fc7728;color:white;border-radius:12px}
 
-/* ── SCAN OVERLAY ── */
 #scan-overlay{display:none;position:fixed;inset:0;z-index:200;background:#f8f9ff;flex-direction:column}
 #scan-overlay.show{display:flex}
-
-/* ── DETAIL SHEET ── */
 #detail-sheet{display:none;position:fixed;inset:0;z-index:150}
 #detail-sheet.show{display:flex}
-
-/* ── TAMBAH MODAL ── */
 #tambah-modal{display:none;position:fixed;inset:0;z-index:250;flex-direction:column}
 #tambah-modal.show{display:flex}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .slide-up{animation:slideUp .3s cubic-bezier(.4,0,.2,1)}
-
-/* ── CRM SHEET ── */
 #crm-sheet{display:none;position:fixed;inset:0;z-index:150}
 #crm-sheet.show{display:flex}
-
-/* ── SCAN RESULT PANEL ── */
 #scan-result{display:none}
 #scan-result.show{display:block}
-
-/* ── SCANNER LASER ANIMATION ── */
 .vf-scan-line{animation:scanline 1.8s linear infinite}
 @keyframes scanline{0%{transform:translateY(0)}100%{transform:translateY(200px)}}
 
-/* ── STOCK RING ── */
-@keyframes ringFill{from{stroke-dashoffset:283}to{stroke-dashoffset:var(--target-offset)}}
+/* ── MODE TABS — 3 pill full width ── */
+.mode-tabs-wrap{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  width:100%;
+  padding:12px 16px;
+  background:#f8f9ff;
+  border-bottom:1px solid #e5eeff;
+  box-sizing:border-box;
+}
+.mode-tab-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:11px 8px;
+  border-radius:14px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  font-weight:700;
+  border:2px solid transparent;
+  cursor:pointer;
+  transition:all .18s cubic-bezier(.34,1.56,.64,1);
+  background:#e5eeff;
+  color:#43474f;
+  white-space:nowrap;
+  width:100%;
+}
+.mode-tab-btn:active{transform:scale(.95)}
+.mode-tab-btn.active-cek{background:#001e40;color:#ffffff;border-color:#001e40;box-shadow:0 4px 12px rgba(0,30,64,.25)}
+.mode-tab-btn.active-masuk{background:#d5f5e3;color:#005228;border-color:#1db262;box-shadow:0 4px 12px rgba(29,178,98,.2)}
+.mode-tab-btn.active-keluar{background:#ffe5e5;color:#ba1a1a;border-color:#ba1a1a;box-shadow:0 4px 12px rgba(186,26,26,.2)}
+.mode-tab-btn .material-symbols-outlined{font-size:18px}
+
+@keyframes ringFill{from{stroke-dashoffset:176}to{stroke-dashoffset:var(--target-offset)}}
 .ring-anim{animation:ringFill 1s cubic-bezier(.4,0,.2,1) .2s forwards}
-
-/* ── MODE TABS ── */
-.scan-mode-btn{transition:all .15s;border:2px solid transparent}
-.scan-mode-btn.active-check{background:#001e40;color:white;border-color:#001e40}
-.scan-mode-btn.active-in{background:#d5f5e3;color:#005228;border-color:#1db262}
-.scan-mode-btn.active-out{background:#ffe5e5;color:#ba1a1a;border-color:#ba1a1a}
-
-/* ── TOAST ── */
+@keyframes resultIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.result-in{animation:resultIn .3s cubic-bezier(.34,1.56,.64,1) forwards}
+.hist-chip{background:#e5eeff;border-radius:20px;padding:2px 8px;font-size:10px;font-family:'JetBrains Mono',monospace;color:#001e40;font-weight:600}
 .success-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#001e40;color:white;padding:12px 20px;border-radius:14px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,30,64,.3)}
-
-/* ── FORM INPUTS ── */
 .form-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:#43474f;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
 .form-input{width:100%;padding:10px 12px;border:1px solid #c3c6d1;border-radius:12px;font-family:'Inter',sans-serif;font-size:14px;color:#0b1c30;background:#fff;outline:none}
 .form-input:focus{border-color:#fc7728;box-shadow:0 0 0 3px rgba(252,119,40,.12)}
 select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23737780' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
-
-/* ── RESULT PULSE ── */
-@keyframes resultIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-.result-in{animation:resultIn .3s cubic-bezier(.34,1.56,.64,1) forwards}
-
-/* ── HISTORY CHIP ── */
-.hist-chip{background:#e5eeff;border-radius:20px;padding:2px 8px;font-size:10px;font-family:'JetBrains Mono',monospace;color:#001e40;font-weight:600}
 </style>
 </head>
 <body class="pb-24 font-body-lg text-on-surface">
@@ -282,37 +290,30 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   </button>
 </main>
 
-<!-- ══════════════════════════════════════════════
-     SCANNER OVERLAY — 3 MODE: Cek / Masuk / Keluar
-═══════════════════════════════════════════════════ -->
+<!-- ══════════════════════════
+     SCANNER OVERLAY
+══════════════════════════════ -->
 <div id="scan-overlay">
-
   <!-- Header -->
   <header class="flex items-center justify-between px-4 h-14 border-b border-outline-variant bg-surface flex-shrink-0">
     <button onclick="closeScan()" class="material-symbols-outlined text-primary p-1">arrow_back</button>
     <h1 class="font-title-md text-primary">Scan Barcode / QR</h1>
     <button class="material-symbols-outlined text-primary p-1">flashlight_on</button>
   </header>
-  <!-- Mode Tabs -->
-<div class="px-4 pt-3 pb-3 bg-surface border-b border-outline-variant flex-shrink-0">
-  <button
-    id="mode-cek"
-    class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-[15px] flex items-center justify-center gap-2 shadow-sm"
-  >
-    <span class="material-symbols-outlined text-[20px]">
-      qr_code_scanner
-    </span>
-    Cek Stok
-  </button>
-</div>
+
+  <!-- ═══ CEK STOK BUTTON — FULL WIDTH ═══ -->
+  <div class="flex-shrink-0" style="padding:12px 16px;background:#f8f9ff;border-bottom:1px solid #e5eeff">
+    <button id="mode-cek" class="mode-tab-btn active-cek" style="width:100%;grid-column:unset">
+      <span class="material-symbols-outlined" style="font-size:18px">qr_code_scanner</span>
+      Cek Stok
+    </button>
+  </div>
 
   <!-- Body -->
   <div class="flex-1 flex flex-col p-4 gap-4 overflow-y-auto">
-
     <!-- Viewfinder -->
     <div class="relative rounded-2xl overflow-hidden bg-black flex-shrink-0" style="aspect-ratio:1">
       <div class="absolute inset-0 bg-[radial-gradient(circle,transparent_50%,rgba(0,0,0,0.75)_100%)]"></div>
-      <!-- Corners -->
       <div class="absolute inset-0 flex items-center justify-center">
         <div class="w-52 h-52 relative">
           <div class="absolute top-0 left-0 w-7 h-7 border-t-4 border-l-4 border-secondary-container rounded-tl-lg"></div>
@@ -322,20 +323,15 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
           <div class="vf-scan-line absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-secondary-container to-transparent"></div>
         </div>
       </div>
-      <!-- Hint label -->
       <p id="scan-hint" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-[12px] bg-black/60 px-3 py-1 rounded-full font-body-sm whitespace-nowrap">Arahkan ke barcode produk</p>
-      <!-- Simulated scan button (prototype) -->
       <button onclick="simulateScan()" class="absolute top-3 right-3 bg-secondary-container text-on-secondary px-3 py-1.5 rounded-full font-label-md text-[11px] font-bold active:scale-90 z-10">
         Demo Scan ▶
       </button>
     </div>
 
-    <!-- RESULT PANEL (Cek Stok) -->
+    <!-- RESULT PANEL -->
     <div id="scan-result" class="result-in">
-
-      <!-- Product identity card -->
       <div class="card rounded-2xl overflow-hidden">
-        <!-- Top: product info -->
         <div class="flex gap-3 p-4">
           <div class="w-16 h-16 rounded-xl bg-surface-container overflow-hidden flex-shrink-0">
             <img id="res-img" src="" class="w-full h-full object-cover" alt="produk"/>
@@ -350,11 +346,8 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
             </div>
           </div>
         </div>
-
-        <!-- Stock visual -->
         <div class="px-4 pb-4">
           <div class="bg-surface-container-low rounded-xl p-4 flex items-center gap-4">
-            <!-- Ring gauge -->
             <div class="relative flex-shrink-0" style="width:72px;height:72px">
               <svg width="72" height="72" viewBox="0 0 72 72" class="-rotate-90">
                 <circle cx="36" cy="36" r="28" fill="none" stroke="#e5eeff" stroke-width="8"/>
@@ -366,7 +359,6 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
                 <span id="res-pct" class="font-label-md font-bold text-[14px] text-primary"></span>
               </div>
             </div>
-            <!-- Numbers -->
             <div class="flex-1">
               <div class="flex justify-between items-end mb-1">
                 <div>
@@ -380,14 +372,11 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
                   <p class="font-label-md text-outline text-[10px]">Unit</p>
                 </div>
               </div>
-              <!-- Bar -->
               <div class="stock-bar w-full mt-2">
                 <div id="res-bar" class="stock-bar-fill" style="width:0%;transition:width 1s ease .3s"></div>
               </div>
             </div>
           </div>
-
-          <!-- Status badge -->
           <div id="res-status-wrap" class="mt-3 px-4 py-2.5 rounded-xl flex items-center gap-2">
             <span id="res-status-icon" class="material-symbols-outlined text-[20px]"></span>
             <div class="flex-1">
@@ -397,28 +386,20 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
             <span id="res-status-badge" class="font-label-md text-[10px] px-3 py-1 rounded-full font-bold flex-shrink-0"></span>
           </div>
         </div>
-
-        <!-- Riwayat mini -->
         <div class="border-t border-outline-variant px-4 py-3">
           <p class="font-label-md text-on-surface-variant text-[10px] uppercase tracking-wider mb-2">Riwayat Terakhir</p>
           <div id="res-history" class="space-y-1.5"></div>
         </div>
       </div>
 
-      <!-- Aksi -->
- <div id="res-aksi-cek" class="mt-3">
-  <button
-    onclick="closeScanToDetail()"
-    class="w-full py-4 rounded-2xl bg-primary text-white font-bold text-[14px] flex items-center justify-center gap-2 active:scale-95 shadow-sm"
-  >
-    <span class="material-symbols-outlined">
-      open_in_new
-    </span>
-    Detail Produk
-  </button>
-</div>
+      <!-- Aksi Cek -->
+      <div id="res-aksi-cek" class="mt-3">
+        <button onclick="closeScanToDetail()" class="w-full py-4 rounded-2xl bg-primary text-white font-bold text-[14px] flex items-center justify-center gap-2 active:scale-95 shadow-sm">
+          <span class="material-symbols-outlined">open_in_new</span> Detail Produk
+        </button>
+      </div>
 
-      <!-- Qty input (Masuk/Keluar mode) -->
+      <!-- Aksi Qty (Masuk/Keluar) -->
       <div id="res-aksi-qty" class="hidden mt-3 space-y-3">
         <p id="qty-mode-label" class="font-label-md text-on-surface-variant text-[11px] uppercase tracking-wider">Jumlah Unit</p>
         <div class="flex items-center gap-3 bg-surface-container-lowest border border-outline-variant rounded-xl p-3">
@@ -428,24 +409,21 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
         </div>
         <button id="confirm-qty-btn" onclick="confirmQty()" class="w-full py-4 rounded-xl font-title-md text-white font-bold active:scale-95 shadow-md">Konfirmasi</button>
       </div>
-
     </div>
 
-    <!-- Placeholder before scan -->
+    <!-- Placeholder -->
     <div id="scan-placeholder" class="flex flex-col items-center justify-center py-8 gap-3">
       <div class="w-16 h-16 rounded-2xl bg-surface-container-high flex items-center justify-center">
         <span class="material-symbols-outlined text-primary text-[36px]">qr_code_2</span>
       </div>
       <p class="font-title-md text-primary font-bold text-center">Siap Scan Barcode</p>
       <p class="font-body-sm text-on-surface-variant text-center text-[13px]">Arahkan kamera ke barcode produk<br>atau tekan <b>Demo Scan ▶</b> untuk coba</p>
-      <!-- Manual SKU input -->
       <div class="w-full mt-2 relative">
         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">edit</span>
         <input id="manual-sku" type="text" placeholder="Ketik SKU manual (cth: SM-2024-003)" class="w-full pl-9 pr-12 py-3 bg-white border border-outline-variant rounded-xl font-label-md text-[12px] focus:outline-none focus:ring-2 focus:ring-secondary-container"/>
         <button onclick="manualLookup()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white px-3 py-1.5 rounded-lg font-label-md text-[11px] font-bold active:scale-90">Cek</button>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -520,10 +498,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       </div>
     </div>
     <div class="px-5 py-4 space-y-4">
-      <div>
-        <label class="form-label">Nama Produk *</label>
-        <input id="inp-nama" class="form-input" type="text" placeholder="cth: Indomie Goreng Spesial"/>
-      </div>
+      <div><label class="form-label">Nama Produk *</label><input id="inp-nama" class="form-input" type="text" placeholder="cth: Indomie Goreng Spesial"/></div>
       <div class="grid grid-cols-2 gap-3">
         <div><label class="form-label">Kode SKU</label><input id="inp-sku" class="form-input" type="text" placeholder="SM-2024-XXX"/></div>
         <div><label class="form-label">Barcode</label><input id="inp-barcode" class="form-input" type="text" placeholder="8991234567890"/></div>
@@ -564,69 +539,20 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <a href="KEMASUANG.html" class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 hover:bg-surface-container-high transition-all active:scale-90"><span class="material-symbols-outlined text-[20px]">payments</span><span class="font-label-md text-[10px]">Finance</span></a>
 </nav>
 
-<!-- ══════════════════════════════════════
-     JAVASCRIPT
-════════════════════════════════════════ -->
 <script>
-// ── PRODUCT DATABASE (mock) ──
 const PRODUCTS = {
-  'SM-2024-001': {
-    name:'Good Time Cokelat', sku:'SM-2024-001', cat:'Makanan & Snack',
-    harga:'Rp 3.200', supplier:'Mayora', stok:35, min:10,
-    img:'https://github.com/Mi24-ai/KEMASTOKO/blob/main/Good%20Time.jpg?raw=true',
-    history:[
-      {type:'masuk', qty:35, waktu:'10 Jun, 10:30', label:'+35 Stok Masuk'},
-      {type:'keluar', qty:3, waktu:'9 Jun, 15:12', label:'-3 Terjual'},
-      {type:'masuk', qty:10, waktu:'8 Jun, 09:00', label:'+10 Stok Masuk'},
-    ]
-  },
-  'SM-2024-042': {
-    name:'Oreo Original', sku:'SM-2024-042', cat:'Makanan & Snack',
-    harga:'Rp 4.500', supplier:'Nabisco', stok:12, min:15,
-    img:'https://images.tokopedia.net/img/cache/700/VqbcmM/2021/1/27/c006d945-1bf4-4516-8863-d31028ecc2f8.jpg.webp',
-    history:[
-      {type:'keluar', qty:8, waktu:'10 Jun, 14:00', label:'-8 Terjual'},
-      {type:'masuk', qty:20, waktu:'7 Jun, 08:00', label:'+20 Stok Masuk'},
-    ]
-  },
-  'SM-2024-003': {
-    name:'Indomie Goreng', sku:'SM-2024-003', cat:'Makanan & Snack',
-    harga:'Rp 3.100', supplier:'Indofood', stok:120, min:20,
-    img:'https://github.com/Mi24-ai/KEMASTOKO/blob/main/indomie.jpg?raw=true',
-    history:[
-      {type:'masuk', qty:50, waktu:'10 Jun, 08:00', label:'+50 Stok Masuk'},
-      {type:'keluar', qty:12, waktu:'9 Jun, 17:00', label:'-12 Terjual'},
-      {type:'keluar', qty:8, waktu:'9 Jun, 12:30', label:'-8 Terjual'},
-    ]
-  },
-  'SM-2024-010': {
-    name:'Aqua 600ml', sku:'SM-2024-010', cat:'Minuman',
-    harga:'Rp 3.500', supplier:'Danone', stok:42, min:20,
-    img:'https://github.com/Mi24-ai/KEMASTOKO/blob/main/aqua.jpg?raw=true',
-    history:[
-      {type:'keluar', qty:18, waktu:'10 Jun, 16:00', label:'-18 Terjual'},
-      {type:'masuk', qty:60, waktu:'8 Jun, 07:30', label:'+60 Stok Masuk'},
-    ]
-  },
-  'SM-2024-055': {
-    name:'Japota Rumput Laut', sku:'SM-2024-055', cat:'Makanan & Snack',
-    harga:'Rp 5.500', supplier:'Garudafood', stok:18, min:10,
-    img:'https://github.com/Mi24-ai/KEMASTOKO/blob/main/japota.jpg?raw=true',
-    history:[
-      {type:'masuk', qty:10, waktu:'Kemarin', label:'+10 Stok Masuk'},
-      {type:'keluar', qty:4, waktu:'8 Jun, 11:00', label:'-4 Terjual'},
-    ]
-  },
+  'SM-2024-001': {name:'Good Time Cokelat',sku:'SM-2024-001',cat:'Makanan & Snack',harga:'Rp 3.200',supplier:'Mayora',stok:35,min:10,img:'https://github.com/Mi24-ai/KEMASTOKO/blob/main/Good%20Time.jpg?raw=true',history:[{type:'masuk',qty:35,waktu:'10 Jun, 10:30',label:'+35 Stok Masuk'},{type:'keluar',qty:3,waktu:'9 Jun, 15:12',label:'-3 Terjual'},{type:'masuk',qty:10,waktu:'8 Jun, 09:00',label:'+10 Stok Masuk'}]},
+  'SM-2024-042': {name:'Oreo Original',sku:'SM-2024-042',cat:'Makanan & Snack',harga:'Rp 4.500',supplier:'Nabisco',stok:12,min:15,img:'https://images.tokopedia.net/img/cache/700/VqbcmM/2021/1/27/c006d945-1bf4-4516-8863-d31028ecc2f8.jpg.webp',history:[{type:'keluar',qty:8,waktu:'10 Jun, 14:00',label:'-8 Terjual'},{type:'masuk',qty:20,waktu:'7 Jun, 08:00',label:'+20 Stok Masuk'}]},
+  'SM-2024-003': {name:'Indomie Goreng',sku:'SM-2024-003',cat:'Makanan & Snack',harga:'Rp 3.100',supplier:'Indofood',stok:120,min:20,img:'https://github.com/Mi24-ai/KEMASTOKO/blob/main/indomie.jpg?raw=true',history:[{type:'masuk',qty:50,waktu:'10 Jun, 08:00',label:'+50 Stok Masuk'},{type:'keluar',qty:12,waktu:'9 Jun, 17:00',label:'-12 Terjual'},{type:'keluar',qty:8,waktu:'9 Jun, 12:30',label:'-8 Terjual'}]},
+  'SM-2024-010': {name:'Aqua 600ml',sku:'SM-2024-010',cat:'Minuman',harga:'Rp 3.500',supplier:'Danone',stok:42,min:20,img:'https://github.com/Mi24-ai/KEMASTOKO/blob/main/aqua.jpg?raw=true',history:[{type:'keluar',qty:18,waktu:'10 Jun, 16:00',label:'-18 Terjual'},{type:'masuk',qty:60,waktu:'8 Jun, 07:30',label:'+60 Stok Masuk'}]},
+  'SM-2024-055': {name:'Japota Rumput Laut',sku:'SM-2024-055',cat:'Makanan & Snack',harga:'Rp 5.500',supplier:'Garudafood',stok:18,min:10,img:'https://github.com/Mi24-ai/KEMASTOKO/blob/main/japota.jpg?raw=true',history:[{type:'masuk',qty:10,waktu:'Kemarin',label:'+10 Stok Masuk'},{type:'keluar',qty:4,waktu:'8 Jun, 11:00',label:'-4 Terjual'}]},
 };
 
-// Demo cycle
 const DEMO_SKUS = Object.keys(PRODUCTS);
 let demoIdx = 0;
-
 let currentMode = 'cek';
 let scannedProduct = null;
 
-// ── SCANNER OPEN/CLOSE ──
 function openScanner(mode) {
   document.getElementById('scan-overlay').classList.add('show');
   setMode(mode || 'cek');
@@ -636,37 +562,22 @@ function closeScan() {
   document.getElementById('scan-overlay').classList.remove('show');
 }
 
-// ── MODE ──
 function setMode(mode) {
   currentMode = mode;
+  // Reset semua tab
   ['cek','masuk','keluar'].forEach(m => {
     const btn = document.getElementById('mode-'+m);
-    btn.className = 'scan-mode-btn flex-1 py-2.5 rounded-xl font-label-md text-[12px] font-bold flex items-center justify-center gap-1.5';
-    if (m === mode) {
-      if (mode==='cek') btn.classList.add('active-check');
-      else if (mode==='masuk') btn.classList.add('active-in');
-      else btn.classList.add('active-out');
-    }
+    btn.className = 'mode-tab-btn';
   });
-  // Update hint
+  // Aktifkan tab yang dipilih
+  document.getElementById('mode-'+mode).classList.add('active-'+mode);
+
   const hints = {cek:'Scan untuk cek sisa stok', masuk:'Scan produk yang masuk', keluar:'Scan produk yang keluar'};
   document.getElementById('scan-hint').textContent = hints[mode];
-  // If product already scanned, update action UI
+
   if (scannedProduct) showResult(scannedProduct, false);
 }
-function setModeFromResult(mode) {
-  setMode(mode);
-  document.getElementById('res-aksi-cek').classList.add('hidden');
-  document.getElementById('res-aksi-qty').classList.remove('hidden');
-  const isIn = mode === 'masuk';
-  document.getElementById('qty-mode-label').textContent = isIn ? '↑ Jumlah Unit MASUK' : '↓ Jumlah Unit KELUAR';
-  const btn = document.getElementById('confirm-qty-btn');
-  btn.className = 'w-full py-4 rounded-xl font-title-md text-white font-bold active:scale-95 shadow-md ' +
-    (isIn ? 'bg-on-tertiary-fixed-variant' : 'bg-error');
-  btn.textContent = isIn ? '✓ Konfirmasi Stok Masuk' : '✓ Konfirmasi Stok Keluar';
-}
 
-// ── SCAN SIMULATE ──
 function simulateScan() {
   const sku = DEMO_SKUS[demoIdx % DEMO_SKUS.length];
   demoIdx++;
@@ -683,15 +594,12 @@ function lookupProduct(sku) {
   showResult(p, true);
 }
 
-// ── SHOW RESULT ──
 function showResult(p, animate) {
-  // Hide placeholder
   document.getElementById('scan-placeholder').style.display = 'none';
   const panel = document.getElementById('scan-result');
   panel.classList.add('show');
   if (animate) { panel.classList.remove('result-in'); void panel.offsetWidth; panel.classList.add('result-in'); }
 
-  // Populate
   document.getElementById('res-img').src = p.img;
   document.getElementById('res-name').textContent = p.name;
   document.getElementById('res-sku').textContent = 'SKU: ' + p.sku;
@@ -699,61 +607,48 @@ function showResult(p, animate) {
   document.getElementById('res-harga').textContent = p.harga + '/pcs';
   document.getElementById('res-supplier').textContent = '· ' + p.supplier;
 
-  // Stock numbers
   const stok = p.stok, min = p.min;
   const maxStok = Math.max(stok, min * 5, 50);
   const pct = Math.round((stok / maxStok) * 100);
   document.getElementById('res-qty').textContent = stok;
   document.getElementById('res-min').textContent = min;
-  document.getElementById('res-pct').textContent = Math.round((stok/maxStok)*100) + '%';
+  document.getElementById('res-pct').textContent = pct + '%';
 
-  // Bar
   const bar = document.getElementById('res-bar');
   const ring = document.getElementById('res-ring');
   const circumference = 176;
   const offset = circumference - (pct / 100) * circumference;
+  setTimeout(() => { bar.style.width = pct + '%'; ring.style.strokeDashoffset = offset; }, 50);
 
-  setTimeout(() => {
-    bar.style.width = pct + '%';
-    ring.style.strokeDashoffset = offset;
-  }, 50);
-
-  // Color based on status
   const isCrit = stok <= min;
   const isLow  = stok <= min * 2 && stok > min;
   const color = isCrit ? '#ba1a1a' : isLow ? '#a04100' : '#1db262';
   bar.style.background = color;
   ring.style.stroke = color;
 
-  // Status
   const wrap = document.getElementById('res-status-wrap');
   const icon = document.getElementById('res-status-icon');
   const text = document.getElementById('res-status-text');
   const sub  = document.getElementById('res-status-sub');
   const badge= document.getElementById('res-status-badge');
   if (isCrit) {
-    wrap.className = 'mt-3 px-4 py-2.5 rounded-xl flex items-center gap-2 bg-error-container';
-    icon.textContent = 'warning'; icon.style.color = '#ba1a1a';
-    text.textContent = 'Stok Kritis!'; text.style.color = '#ba1a1a';
-    sub.textContent = 'Di bawah batas minimum — segera restock'; sub.style.color = '#ba1a1a';
-    badge.textContent = 'KRITIS'; badge.className = 'font-label-md text-[10px] px-3 py-1 rounded-full font-bold bg-error text-on-error';
+    wrap.className='mt-3 px-4 py-2.5 rounded-xl flex items-center gap-2 bg-error-container';
+    icon.textContent='warning';icon.style.color='#ba1a1a';text.textContent='Stok Kritis!';text.style.color='#ba1a1a';
+    sub.textContent='Di bawah batas minimum — segera restock';sub.style.color='#ba1a1a';
+    badge.textContent='KRITIS';badge.className='font-label-md text-[10px] px-3 py-1 rounded-full font-bold bg-error text-on-error';
   } else if (isLow) {
-    wrap.className = 'mt-3 px-4 py-2.5 rounded-xl flex items-center gap-2 bg-secondary-fixed';
-    icon.textContent = 'info'; icon.style.color = '#a04100';
-    text.textContent = 'Stok Mulai Menipis'; text.style.color = '#a04100';
-    sub.textContent = 'Pertimbangkan restock dalam waktu dekat'; sub.style.color = '#a04100';
-    badge.textContent = 'RENDAH'; badge.className = 'font-label-md text-[10px] px-3 py-1 rounded-full font-bold bg-secondary-fixed-dim text-secondary';
+    wrap.className='mt-3 px-4 py-2.5 rounded-xl flex items-center gap-2 bg-secondary-fixed';
+    icon.textContent='info';icon.style.color='#a04100';text.textContent='Stok Mulai Menipis';text.style.color='#a04100';
+    sub.textContent='Pertimbangkan restock dalam waktu dekat';sub.style.color='#a04100';
+    badge.textContent='RENDAH';badge.className='font-label-md text-[10px] px-3 py-1 rounded-full font-bold bg-secondary-fixed-dim text-secondary';
   } else {
-    wrap.className = 'mt-3 px-4 py-2.5 rounded-xl flex items-center gap-2 bg-tertiary-fixed/30';
-    icon.textContent = 'check_circle'; icon.style.color = '#1db262';
-    text.textContent = 'Stok Aman'; text.style.color = '#005228';
-    sub.textContent = stok + ' unit tersedia · batas minimum ' + min + ' unit'; sub.style.color = '#43474f';
-    badge.textContent = 'AMAN'; badge.className = 'font-label-md text-[10px] px-3 py-1 rounded-full font-bold bg-tertiary-fixed text-on-tertiary-fixed';
+    wrap.className='mt-3 px-4 py-2.5 rounded-xl flex items-center gap-2 bg-tertiary-fixed/30';
+    icon.textContent='check_circle';icon.style.color='#1db262';text.textContent='Stok Aman';text.style.color='#005228';
+    sub.textContent=stok+' unit tersedia · batas minimum '+min+' unit';sub.style.color='#43474f';
+    badge.textContent='AMAN';badge.className='font-label-md text-[10px] px-3 py-1 rounded-full font-bold bg-tertiary-fixed text-on-tertiary-fixed';
   }
 
-  // History
-  const hist = document.getElementById('res-history');
-  hist.innerHTML = p.history.map(h => `
+  document.getElementById('res-history').innerHTML = p.history.map(h => `
     <div class="flex items-center gap-2">
       <div class="w-6 h-6 rounded-lg flex-shrink-0 flex items-center justify-center ${h.type==='masuk'?'bg-tertiary-fixed/40':'bg-error-container'}">
         <span class="material-symbols-outlined text-[13px] ${h.type==='masuk'?'text-on-tertiary-fixed-variant':'text-error'}" style="font-variation-settings:'FILL' 1">${h.type==='masuk'?'add_circle':'remove_circle'}</span>
@@ -762,12 +657,17 @@ function showResult(p, animate) {
       <span class="hist-chip">${h.waktu}</span>
     </div>`).join('');
 
-  // Action panels
   if (currentMode === 'cek') {
     document.getElementById('res-aksi-cek').classList.remove('hidden');
     document.getElementById('res-aksi-qty').classList.add('hidden');
   } else {
-    setModeFromResult(currentMode);
+    document.getElementById('res-aksi-cek').classList.add('hidden');
+    document.getElementById('res-aksi-qty').classList.remove('hidden');
+    const isIn = currentMode === 'masuk';
+    document.getElementById('qty-mode-label').textContent = isIn ? '↑ Jumlah Unit MASUK' : '↓ Jumlah Unit KELUAR';
+    const btn = document.getElementById('confirm-qty-btn');
+    btn.className = 'w-full py-4 rounded-xl font-title-md text-white font-bold active:scale-95 shadow-md ' + (isIn ? 'bg-on-tertiary-fixed-variant' : 'bg-error');
+    btn.textContent = isIn ? '✓ Konfirmasi Stok Masuk' : '✓ Konfirmasi Stok Keluar';
   }
 }
 
@@ -778,7 +678,6 @@ function resetScanResult() {
   document.getElementById('manual-sku').value = '';
 }
 
-// ── QTY CONFIRM ──
 function changeScanQty(d) {
   const i = document.getElementById('scan-qty');
   i.value = Math.max(1, parseInt(i.value) + d);
@@ -788,152 +687,87 @@ function confirmQty() {
   const qty = parseInt(document.getElementById('scan-qty').value) || 1;
   const isIn = currentMode === 'masuk';
   const now = new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'});
-
-  // Update mock stok
   if (isIn) scannedProduct.stok += qty;
   else scannedProduct.stok = Math.max(0, scannedProduct.stok - qty);
-
-  // Add to history
-  scannedProduct.history.unshift({
-    type: isIn ? 'masuk' : 'keluar',
-    qty,
-    waktu: 'Baru saja',
-    label: (isIn ? '+' : '-') + qty + ' ' + (isIn ? 'Stok Masuk' : 'Terjual')
-  });
-
-  // Add to log
+  scannedProduct.history.unshift({type:isIn?'masuk':'keluar',qty,waktu:'Baru saja',label:(isIn?'+':'-')+qty+' '+(isIn?'Stok Masuk':'Terjual')});
   addToLog(scannedProduct.name, qty, isIn, now);
-
-  const msg = isIn
-    ? `✅ +${qty} ${scannedProduct.name} — Stok sekarang: ${scannedProduct.stok} unit`
-    : `✅ -${qty} ${scannedProduct.name} — Sisa stok: ${scannedProduct.stok} unit`;
-  showToast(msg);
-
-  // Refresh result
+  showToast(isIn ? `✅ +${qty} ${scannedProduct.name} — Stok: ${scannedProduct.stok} unit` : `✅ -${qty} ${scannedProduct.name} — Sisa: ${scannedProduct.stok} unit`);
   setMode('cek');
   showResult(scannedProduct, true);
   document.getElementById('scan-qty').value = 1;
 }
-
 function addToLog(name, qty, isIn, time) {
   const lc = document.getElementById('log-container');
   const div = document.createElement('div');
   div.className = 'flex items-center gap-3 pt-3 border-t border-outline-variant';
-  div.innerHTML = `
-    <div class="w-9 h-9 rounded-xl ${isIn?'bg-tertiary-fixed':'bg-error-container'} flex items-center justify-center flex-shrink-0">
-      <span class="material-symbols-outlined ${isIn?'text-on-tertiary-fixed-variant':'text-error'} text-[18px]" style="font-variation-settings:'FILL' 1">${isIn?'add_circle':'remove_circle'}</span>
-    </div>
-    <div class="flex-1">
-      <div class="flex justify-between"><p class="font-body-sm font-semibold">${isIn?'Stok Masuk':'Stok Keluar (Jual)'}</p><p class="font-label-md text-outline text-[11px]">${time}</p></div>
-      <p class="font-body-sm text-on-surface-variant text-[12px]">${isIn?'+':'-'}${qty} ${name}</p>
-    </div>`;
+  div.innerHTML = `<div class="w-9 h-9 rounded-xl ${isIn?'bg-tertiary-fixed':'bg-error-container'} flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined ${isIn?'text-on-tertiary-fixed-variant':'text-error'} text-[18px]" style="font-variation-settings:'FILL' 1">${isIn?'add_circle':'remove_circle'}</span></div><div class="flex-1"><div class="flex justify-between"><p class="font-body-sm font-semibold">${isIn?'Stok Masuk':'Stok Keluar (Jual)'}</p><p class="font-label-md text-outline text-[11px]">${time}</p></div><p class="font-body-sm text-on-surface-variant text-[12px]">${isIn?'+':'-'}${qty} ${name}</p></div>`;
   lc.insertBefore(div, lc.firstChild);
 }
-
 function closeScanToDetail() {
   if (!scannedProduct) return;
   closeScan();
   const p = scannedProduct;
   openDetail(p.name, p.sku, p.stok, p.stok <= p.min ? 'kritis' : 'tersedia', p.cat, p.harga);
 }
-
-// ── MAIN STOCK FUNCTIONS ──
 function filterStock(q) {
   document.querySelectorAll('#stock-list > div[data-name]').forEach(el => {
     el.style.display = el.dataset.name.includes(q.toLowerCase()) ? 'flex' : 'none';
   });
 }
 function setTab(el, cat) {
-  document.querySelectorAll('.tab-item').forEach(t => {
-    t.classList.remove('tab-active');
-    t.classList.add('bg-surface-container-high','text-on-surface-variant');
-  });
-  el.classList.add('tab-active');
-  el.classList.remove('bg-surface-container-high','text-on-surface-variant');
+  document.querySelectorAll('.tab-item').forEach(t => { t.classList.remove('tab-active'); t.classList.add('bg-surface-container-high','text-on-surface-variant'); });
+  el.classList.add('tab-active'); el.classList.remove('bg-surface-container-high','text-on-surface-variant');
   document.querySelectorAll('#stock-list > div[data-name]').forEach(item => {
     item.style.display = (cat==='semua'||cat==='tersedia'||item.dataset.cat===cat) ? 'flex' : 'none';
   });
 }
 function openDetail(name,sku,qty,status,cat,price) {
-  document.getElementById('d-name').textContent = name;
-  document.getElementById('d-sku').textContent = 'SKU: '+sku;
-  document.getElementById('d-qty').textContent = qty+' Unit';
-  document.getElementById('d-status').textContent = status==='tersedia'?'Tersedia ✓':'Kritis ⚠';
-  document.getElementById('d-cat').textContent = cat;
-  document.getElementById('d-price').textContent = price+' / pcs';
+  document.getElementById('d-name').textContent=name; document.getElementById('d-sku').textContent='SKU: '+sku;
+  document.getElementById('d-qty').textContent=qty+' Unit'; document.getElementById('d-status').textContent=status==='tersedia'?'Tersedia ✓':'Kritis ⚠';
+  document.getElementById('d-cat').textContent=cat; document.getElementById('d-price').textContent=price+' / pcs';
   document.getElementById('detail-sheet').classList.add('show');
 }
 function closeDetail() { document.getElementById('detail-sheet').classList.remove('show'); }
 function hitungMargin() {
-  const beli = parseFloat(document.getElementById('inp-harga-beli').value)||0;
-  const jual = parseFloat(document.getElementById('inp-harga-jual').value)||0;
-  const box = document.getElementById('margin-box');
-  if (beli>0 && jual>0) {
-    const m = ((jual-beli)/jual*100).toFixed(1);
-    document.getElementById('margin-val').textContent = m+'%';
-    document.getElementById('margin-val').style.color = m>=20?'#1db262':m>=10?'#a04100':'#ba1a1a';
-    box.classList.remove('hidden');
-  } else { box.classList.add('hidden'); }
+  const beli=parseFloat(document.getElementById('inp-harga-beli').value)||0;
+  const jual=parseFloat(document.getElementById('inp-harga-jual').value)||0;
+  const box=document.getElementById('margin-box');
+  if(beli>0&&jual>0){const m=((jual-beli)/jual*100).toFixed(1);document.getElementById('margin-val').textContent=m+'%';document.getElementById('margin-val').style.color=m>=20?'#1db262':m>=10?'#a04100':'#ba1a1a';box.classList.remove('hidden');}else{box.classList.add('hidden');}
 }
 function simpanProduk() {
-  const nama = document.getElementById('inp-nama').value.trim();
-  const stok = document.getElementById('inp-stok').value;
-  const hargaJual = document.getElementById('inp-harga-jual').value;
-  const sku = document.getElementById('inp-sku').value.trim() || 'SM-2024-'+Math.floor(Math.random()*900+100);
-  const kategori = document.getElementById('inp-kategori').value || 'lainnya';
-  if (!nama) { showToast('⚠ Nama produk wajib diisi!'); return; }
-  if (!hargaJual) { showToast('⚠ Harga jual wajib diisi!'); return; }
-  const jumlah = parseInt(stok)||0;
-  const harga = 'Rp '+parseInt(hargaJual).toLocaleString('id-ID');
-
-  // Add to PRODUCTS db so scanner can find it
-  PRODUCTS[sku] = {
-    name: nama, sku, cat: kategori, harga, supplier: 'Supplier Baru',
-    stok: jumlah, min: parseInt(document.getElementById('inp-min-stok').value)||5,
-    img:'', history:[]
-  };
-
-  const container = document.getElementById('new-products-container');
-  const div = document.createElement('div');
-  div.className = 'card p-4 rounded-xl flex gap-3 items-center';
-  div.dataset.name = nama.toLowerCase();
-  div.dataset.cat = kategori;
-  div.onclick = () => openDetail(nama, sku, jumlah, 'tersedia', kategori, harga);
-  div.innerHTML = `
-    <div class="w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center flex-shrink-0">
-      <span class="material-symbols-outlined text-primary text-[24px]" style="font-variation-settings:'FILL' 1">inventory_2</span>
-    </div>
-    <div class="flex-1 min-w-0">
-      <div class="flex items-center gap-2 mb-1">
-        <p class="font-body-sm font-semibold text-on-surface leading-tight">${nama}</p>
-        <span class="bg-tertiary-fixed text-on-tertiary-fixed text-[9px] px-2 py-0.5 rounded-full font-bold flex-shrink-0">Baru</span>
-      </div>
-      <p class="font-label-md text-on-surface-variant text-[10px]">${sku} · ${kategori}</p>
-      <div class="stock-bar mt-2 w-full"><div class="stock-bar-fill bg-on-tertiary-container" style="width:100%"></div></div>
-    </div>
-    <div class="text-right flex-shrink-0">
-      <p class="font-title-md text-primary font-extrabold text-[18px]">${jumlah}</p>
-      <p class="font-label-md text-outline text-[10px] uppercase">Unit</p>
-    </div>`;
+  const nama=document.getElementById('inp-nama').value.trim();
+  const stok=document.getElementById('inp-stok').value;
+  const hargaJual=document.getElementById('inp-harga-jual').value;
+  const sku=document.getElementById('inp-sku').value.trim()||'SM-2024-'+Math.floor(Math.random()*900+100);
+  const kategori=document.getElementById('inp-kategori').value||'lainnya';
+  if(!nama){showToast('⚠ Nama produk wajib diisi!');return;}
+  if(!hargaJual){showToast('⚠ Harga jual wajib diisi!');return;}
+  const jumlah=parseInt(stok)||0;
+  const harga='Rp '+parseInt(hargaJual).toLocaleString('id-ID');
+  PRODUCTS[sku]={name:nama,sku,cat:kategori,harga,supplier:'Supplier Baru',stok:jumlah,min:parseInt(document.getElementById('inp-min-stok').value)||5,img:'',history:[]};
+  const container=document.getElementById('new-products-container');
+  const div=document.createElement('div');
+  div.className='card p-4 rounded-xl flex gap-3 items-center';
+  div.dataset.name=nama.toLowerCase(); div.dataset.cat=kategori;
+  div.onclick=()=>openDetail(nama,sku,jumlah,'tersedia',kategori,harga);
+  div.innerHTML=`<div class="w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-primary text-[24px]" style="font-variation-settings:'FILL' 1">inventory_2</span></div><div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-1"><p class="font-body-sm font-semibold text-on-surface leading-tight">${nama}</p><span class="bg-tertiary-fixed text-on-tertiary-fixed text-[9px] px-2 py-0.5 rounded-full font-bold flex-shrink-0">Baru</span></div><p class="font-label-md text-on-surface-variant text-[10px]">${sku} · ${kategori}</p><div class="stock-bar mt-2 w-full"><div class="stock-bar-fill bg-on-tertiary-container" style="width:100%"></div></div></div><div class="text-right flex-shrink-0"><p class="font-title-md text-primary font-extrabold text-[18px]">${jumlah}</p><p class="font-label-md text-outline text-[10px] uppercase">Unit</p></div>`;
   container.appendChild(div);
   addToLog(nama, jumlah, true, 'Baru saja');
-
   ['inp-nama','inp-sku','inp-barcode','inp-harga-beli','inp-harga-jual','inp-stok','inp-min-stok'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('inp-kategori').value = '';
+  document.getElementById('inp-kategori').value='';
   document.getElementById('margin-box').classList.add('hidden');
   document.getElementById('tambah-modal').classList.remove('show');
   showToast('✅ Produk '+nama+' berhasil ditambahkan!');
 }
 function showToast(msg) {
-  const existing = document.querySelector('.success-toast');
-  if (existing) existing.remove();
-  const t = document.createElement('div');
-  t.className = 'success-toast';
-  t.textContent = msg;
+  const existing=document.querySelector('.success-toast');
+  if(existing)existing.remove();
+  const t=document.createElement('div');
+  t.className='success-toast';t.textContent=msg;
   document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3500);
+  setTimeout(()=>t.remove(),3500);
 }
-document.getElementById('tambah-modal').addEventListener('click', function(e){ if(e.target===this) this.classList.remove('show'); });
+document.getElementById('tambah-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
 </script>
 </body>
 </html>
